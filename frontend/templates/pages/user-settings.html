@@ -35,13 +35,10 @@
               </button>
             </form>
           {% else %}
-            <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='starter' %}">
-              {% csrf_token %}
-              <button type="submit" class="ca-btn ca-btn-primary w-full">
-                Upgrade account
-              </button>
-            </form>
-            <p class="ca-help">Stripe Checkout opens next.</p>
+            <a href="{% url 'pricing' %}" class="ca-btn ca-btn-primary w-full">
+              View plans
+            </a>
+            <p class="ca-help">Choose Starter or Agency on the pricing page.</p>
           {% endif %}
         </div>
       </section>
@@ -68,13 +65,13 @@
           <div>
             {{ form.first_name.errors | safe }}
             <label for="{{ form.first_name.id_for_label }}" class="ca-label">First name</label>
-            {% render_field form.first_name id="first-name" name="first-name" type="text" autocomplete="given-name" class="ca-field mt-2" %}
+            {% render_field form.first_name type="text" autocomplete="given-name" class="ca-field mt-2" %}
           </div>
 
           <div>
             {{ form.last_name.errors | safe }}
             <label for="{{ form.last_name.id_for_label }}" class="ca-label">Last name</label>
-            {% render_field form.last_name id="last-name" name="last-name" type="text" autocomplete="family-name" class="ca-field mt-2" %}
+            {% render_field form.last_name type="text" autocomplete="family-name" class="ca-field mt-2" %}
           </div>
         </div>
       </section>

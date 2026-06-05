@@ -247,6 +247,7 @@
   .ca-field {
     display: block;
     width: 100%;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--ca-line);
     border-radius: 10px;
     background: var(--ca-bg);

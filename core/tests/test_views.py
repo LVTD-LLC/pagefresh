@@ -187,3 +187,24 @@ class TestCheckoutSession:
         assert response.url == "https://stripe.test/checkout"
         assert captured["metadata"]["plan"] == "agency"
         assert "trial_period_days" not in captured["subscription_data"]
+
+
+@pytest.mark.django_db
+class TestUserSettingsView:
+    def test_settings_updates_first_and_last_name(self, auth_client, user):
+        response = auth_client.post(
+            reverse("settings"),
+            {
+                "first_name": "Ada",
+                "last_name": "Lovelace",
+                "preferred_email_time": "09:30",
+                "timezone": "UTC",
+            },
+        )
+
+        assert response.status_code == 302
+        assert response.url == reverse("settings")
+
+        user.refresh_from_db()
+        assert user.first_name == "Ada"
+        assert user.last_name == "Lovelace"
