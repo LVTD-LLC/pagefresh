@@ -60,8 +60,10 @@
         <li>Daily, weekly, or monthly cadence</li>
       </ul>
       {% if user.is_authenticated %}
-        {% if has_pro_subscription %}
+        {% if current_plan_key == "starter" %}
           <span class="mt-8 block rounded-xl bg-[color:var(--pf-brand-soft)] px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-brand-dark)]">Current plan is active</span>
+        {% elif current_plan_key == "agency" %}
+          <span class="mt-8 block rounded-xl bg-[color:var(--pf-panel-muted)] px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-muted)]">Included in Agency</span>
         {% else %}
           <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='starter' %}" class="mt-8">
             {% csrf_token %}
@@ -83,7 +85,7 @@
         <li>Archive old sitemaps without losing history</li>
       </ul>
       {% if user.is_authenticated %}
-        {% if has_pro_subscription %}
+        {% if current_plan_key == "agency" %}
           <span class="mt-8 block rounded-xl bg-white px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-ink)]">Current plan is active</span>
         {% else %}
           <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='agency' %}" class="mt-8">

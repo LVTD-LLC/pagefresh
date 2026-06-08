@@ -206,6 +206,37 @@ class TestPricingView:
         assert b">7<" in response.content
         assert b">42<" in response.content
 
+    def test_starter_subscriber_can_upgrade_to_agency(
+        self, auth_client, user, profile, configured_billing_plans
+    ):
+        profile.state = ProfileStates.SUBSCRIBED
+        profile.stripe_plan_key = "starter"
+        profile.save(update_fields=["state", "stripe_plan_key"])
+
+        response = auth_client.get(reverse("pricing"))
+
+        assert response.status_code == 200
+        assert response.content.count(b"Current plan is active") == 1
+        agency_checkout_url = reverse(
+            "user_upgrade_checkout_session",
+            kwargs={"pk": user.id, "plan": "agency"},
+        ).encode()
+        assert agency_checkout_url in response.content
+        assert b"Choose Agency" in response.content
+
+    def test_agency_subscriber_only_sees_agency_as_current(
+        self, auth_client, profile, configured_billing_plans
+    ):
+        profile.state = ProfileStates.SUBSCRIBED
+        profile.stripe_plan_key = "agency"
+        profile.save(update_fields=["state", "stripe_plan_key"])
+
+        response = auth_client.get(reverse("pricing"))
+
+        assert response.status_code == 200
+        assert response.content.count(b"Current plan is active") == 1
+        assert b"Included in Agency" in response.content
+
 
 @pytest.mark.django_db
 class TestUserSettingsView:
