@@ -17,7 +17,7 @@
 ## Django Project Package: `cleanapp/`
 
 - `settings.py`: application settings, installed apps, auth, storage, queues, logging, observability, billing plan config, and integration keys.
-- `settings_test.py`: test-specific settings.
+- `settings_test.py`: optional test settings module. It is not wired into pytest by default; `pytest.ini` currently uses `cleanapp.settings`.
 - `urls.py`: root URL routing for admin, accounts, anymail, static pages, core routes, and sitemap.xml.
 - `sitemaps.py`: Django sitemap definitions.
 - `storages.py`: storage helpers.

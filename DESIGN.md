@@ -7,7 +7,7 @@ colors:
   primary-hover: "oklch(0.19 0.028 250)"
   secondary: "oklch(0.51 0.14 166)"
   primary-soft: "oklch(0.92 0.05 166)"
-  on-primary: "#ffffff"
+  on-primary: "oklch(1 0 0)"
   text: "oklch(0.19 0.028 250)"
   text-muted: "oklch(0.42 0.035 250)"
   text-subtle: "oklch(0.56 0.03 250)"
@@ -131,11 +131,19 @@ Marketing screens should show the review loop immediately: sitemap import, due p
 The implementation source of truth is `frontend/src/styles/index.css`, where the `--pf-*` variables use OKLCH values. Keep DESIGN.md and those CSS tokens aligned when changing brand or product UI colors.
 
 - `primary` / `--pf-brand-dark`: primary actions, active links, and durable brand marks.
+- `primary-hover` / `--pf-ink`: dark hover states for primary actions.
 - `secondary` / `--pf-brand`: lighter orientation accents and focus rings.
 - `primary-soft` / `--pf-brand-soft`: low-pressure status badges and gentle highlight backgrounds.
-- `text`, `text-muted`, and `text-subtle`: headings, body copy, captions, timestamps, and helper text.
-- `surface`, `surface-muted`, and `border`: product panels, filters, table rows, empty states, and separators.
-- `warning` and `danger`: billing limits, destructive/archive actions, and real error states only.
+- `on-primary`: white text on dark action surfaces; it matches `oklch(1 0 0)`.
+- `text` / `--pf-ink`: headings and primary body text.
+- `text-muted` / `--pf-muted`: helper text, secondary copy, and captions.
+- `text-subtle` / `--pf-subtle`: low-emphasis metadata and inactive states.
+- `background` / `--pf-surface`: page background.
+- `surface` / `--pf-panel`: white panels and inputs.
+- `surface-muted` / `--pf-panel-muted`: tinted panels, hover rows, and quiet empty states.
+- `border` / `--pf-line`: dividers, panel outlines, and input borders.
+- `warning` / `--pf-warning`: billing limits and caution indicators.
+- `danger` / `--pf-danger`: destructive/archive actions and real error states.
 
 Do not introduce a second dominant accent color. If a new state is needed, derive it from the existing semantic colors and verify contrast.
 
@@ -182,6 +190,12 @@ Use existing `pf-*` classes before adding new component styles.
 - Tables/lists: URLs are the core data. Keep URL text readable, row actions nearby, and status columns compact.
 
 Destructive actions should use red text/background treatment and clear labels such as `Archive`, never vague icon-only controls.
+
+## Motion
+
+Marketing pages can use short entrance and hover motion when it clarifies the product artifact. Product UI motion should stay between 150 and 250ms, be tied to state changes, and avoid drawing attention away from review work.
+
+All motion must respect `prefers-reduced-motion`. Do not add decorative looping animation, parallax, or animated background effects.
 
 ## Do's and Don'ts
 

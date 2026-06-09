@@ -28,7 +28,7 @@ Root instructions for AI coding agents working in this repo.
 - Start local stack: `make serve`
 - Django shell: `make shell`
 - Django management commands: `make manage <command>`
-- Generate migrations after model changes: `make manage makemigrations`
+- Generate migrations after model changes: `make makemigrations`
 - Apply migrations: `make migrate`
 - Run tests in the Docker sandbox: `make test`
 - Run focused tests: `make test core/tests/test_review_queue.py`
@@ -51,7 +51,7 @@ Do not run host `pytest` directly for normal validation. The project rules expec
 ## Migrations
 
 - Do not hand-write migration files.
-- If models change, update the model code first, then generate migrations with `make manage makemigrations`.
+- If models change, update the model code first, then generate migrations with `make makemigrations`.
 - Review generated migrations before finishing, especially for data loss, defaults, nullability, and backfills.
 - Migration files are excluded from pre-commit formatting; keep them generated and minimal.
 
