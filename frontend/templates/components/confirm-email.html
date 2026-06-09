@@ -1,23 +1,18 @@
 {% if not email_verified %}
-<div class="ca-panel mb-5 border-[oklch(0.84_0.1_55)] bg-[oklch(0.96_0.045_55)] p-4">
-  <div class="flex gap-3">
-    <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white">
-      <svg class="h-5 w-5 text-[var(--ca-warning)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-        <path fill-rule="evenodd" d="M8.485 3.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 3.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-      </svg>
-    </div>
+<div class="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4">
+  <div class="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
     <div>
-      <h3 class="text-sm font-black text-ca-ink">Confirm your email</h3>
-      <form method="post" action="{{ resend_confirmation_url }}" class="mt-1 text-sm font-semibold leading-6 text-ca-muted">
-        {% csrf_token %}
-        <p>
-          Some reminder features stay limited until your email is confirmed.
-          <button type="submit" class="font-black text-ca-ink underline decoration-[var(--ca-warning)] underline-offset-4">
-            Resend confirmation
-          </button>
-        </p>
-      </form>
+      <h2 class="text-sm font-semibold text-amber-950">Confirm your email</h2>
+      <p class="mt-1 text-sm leading-6 text-amber-900">
+        Email confirmation is required before every PageFresh feature is available.
+      </p>
     </div>
+    <form method="post" action="{{ resend_confirmation_url }}">
+      {% csrf_token %}
+      <button type="submit" class="rounded-xl border border-amber-400 bg-white px-4 py-2 text-sm font-semibold text-amber-950 transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2">
+        Resend confirmation
+      </button>
+    </form>
   </div>
 </div>
 {% endif %}

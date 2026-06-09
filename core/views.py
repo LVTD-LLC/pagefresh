@@ -386,8 +386,16 @@ class PricingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["plans"] = get_available_plans()
+        plans = get_available_plans()
+        plans_by_key = {plan["key"]: plan for plan in plans}
+        context["plans"] = plans
         context["free_site_limit"] = settings.CLEANAPP_FREE_SITE_LIMIT
+        context["starter_site_limit"] = int(
+            plans_by_key.get("starter", {}).get("site_limit", settings.CLEANAPP_STARTER_SITE_LIMIT)
+        )
+        context["agency_site_limit"] = int(
+            plans_by_key.get("agency", {}).get("site_limit", settings.CLEANAPP_AGENCY_SITE_LIMIT)
+        )
 
         if self.request.user.is_authenticated:
             try:

@@ -3,51 +3,48 @@
 {% load widget_tweaks %}
 
 {% block meta %}
-  <title>Cleanapp - Sitemaps</title>
+  <title>PageFresh - Sites</title>
 {% endblock meta %}
 
 {% block content %}
-<div class="ca-wide-wrap py-6 sm:py-8 lg:py-10" data-controller="sitemap">
-  {% if active_site_count == 0 %}
-    <div class="fixed inset-0 z-50 bg-[oklch(0.135_0.018_250_/_0.62)]" aria-hidden="true" data-sitemap-target="onboardingOverlay"></div>
+  <div class="pf-shell py-8 md:py-10" data-controller="sitemap">
+    {% if active_site_count == 0 %}
+    <div class="fixed inset-0 z-40 bg-[color:var(--pf-ink)]/50 backdrop-blur-sm" aria-hidden="true" data-sitemap-target="onboardingOverlay"></div>
 
     <div class="fixed inset-0 z-50 overflow-y-auto" data-sitemap-target="onboardingModal">
-      <div class="flex min-h-screen items-center justify-center px-4 py-10">
-        <div class="ca-panel w-full max-w-xl overflow-hidden">
-          <div class="border-b border-[var(--ca-line)] bg-[var(--ca-accent-soft)] p-6">
-            <span class="ca-kicker bg-white">First sitemap</span>
-            <h2 class="mt-4 text-3xl font-black tracking-[-0.03em] text-ca-ink">Start with the site map.</h2>
-            <p class="ca-copy mt-3">
-              Add a sitemap URL and Cleanapp will turn the discovered pages into your review queue.
+      <div class="flex min-h-screen items-center justify-center px-4 py-8">
+        <div class="pf-panel w-full max-w-xl overflow-hidden">
+          <div class="border-b border-[color:var(--pf-line)] px-6 py-5">
+            <p class="text-sm font-semibold text-[color:var(--pf-brand-dark)]">Start the review loop</p>
+            <h1 class="mt-2 text-2xl font-semibold text-[color:var(--pf-ink)]">Add your first sitemap</h1>
+            <p class="mt-2 text-sm leading-6 text-[color:var(--pf-muted)]">
+              PageFresh imports your pages and starts building a review queue in under a minute.
             </p>
           </div>
 
-          <form method="post" class="p-6">
+          <form method="post" class="px-6 py-5">
             {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div>
-              {{ form.sitemap_url.errors | safe }}
-              <label for="{{ form.sitemap_url.id_for_label }}" class="ca-label">Sitemap URL</label>
-              <div class="mt-2">
+            <div class="grid gap-4">
+              {{ form.non_field_errors }}
+              <div>
+                {{ form.sitemap_url.errors | safe }}
+                <label for="{{ form.sitemap_url.id_for_label }}" class="pf-label">Sitemap URL</label>
                 {{ form.sitemap_url }}
+                <p class="pf-help">Use the full URL, for example https://example.com/sitemap.xml.</p>
               </div>
-              <p class="ca-help">Use the full URL, for example https://example.com/sitemap.xml.</p>
-            </div>
-
-            <div class="mt-5">
-              {{ form.client_label.errors | safe }}
-              <label for="{{ form.client_label.id_for_label }}" class="ca-label">Client label</label>
-              <div class="mt-2">
+              <div>
+                {{ form.client_label.errors | safe }}
+                <label for="{{ form.client_label.id_for_label }}" class="pf-label">Client label</label>
                 {{ form.client_label }}
+                <p class="pf-help">Optional. Helps group sites in your dashboard and email digest.</p>
               </div>
-              <p class="ca-help">Optional, for agencies managing multiple client sites.</p>
             </div>
 
-            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-              <button type="button" data-action="click->sitemap#skipOnboarding" class="ca-btn ca-btn-secondary">
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button type="button" data-action="click->sitemap#skipOnboarding" class="pf-button-secondary">
                 Skip for now
               </button>
-              <button type="submit" class="ca-btn ca-btn-primary disabled:cursor-not-allowed disabled:opacity-50" {% if site_limit_reached %}disabled{% endif %}>
+              <button type="submit" class="pf-button-primary" {% if site_limit_reached %}disabled{% endif %}>
                 Add sitemap
               </button>
             </div>
@@ -55,180 +52,149 @@
         </div>
       </div>
     </div>
-  {% endif %}
+    {% endif %}
 
-  <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-    <div>
-      <p class="text-sm font-black text-ca-muted">Dashboard</p>
-      <h1 class="mt-2 text-4xl font-black tracking-[-0.03em] text-ca-ink">Sitemaps</h1>
-      <p class="ca-copy mt-3 max-w-2xl">
-        Each sitemap becomes a review queue. Label client sites, keep active work under the plan limit, and let reminders handle the rhythm.
-      </p>
+    <div class="grid gap-6 lg:grid-cols-[1fr_18rem] lg:items-start">
+      <div>
+        <p class="text-sm font-semibold text-[color:var(--pf-brand-dark)]">Dashboard</p>
+        <div class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 class="pf-page-title">Sites</h1>
+            <p class="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--pf-muted)]">
+              Add sitemaps, group them by client, and keep review reminders moving.
+            </p>
+          </div>
+          {% if active_site_count > 0 %}
+          <button
+            type="button"
+            data-action="click->sitemap#toggleForm"
+            data-sitemap-target="toggleButton"
+            class="pf-button-primary shrink-0"
+            {% if site_limit_reached %}disabled{% endif %}
+          >
+            Add sitemap
+          </button>
+          {% else %}
+          <button
+            type="button"
+            data-action="click->sitemap#showOnboarding"
+            class="pf-button-primary shrink-0"
+            {% if site_limit_reached %}disabled{% endif %}
+          >
+            Add sitemap
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="pf-panel p-5">
+        <p class="text-sm font-semibold text-[color:var(--pf-ink)]">Plan usage</p>
+        <p class="mt-3 text-3xl font-semibold text-[color:var(--pf-ink)]">{{ active_site_count }} / {{ site_limit }}</p>
+        <p class="mt-1 text-sm text-[color:var(--pf-muted)]">active site{{ site_limit|pluralize }} used</p>
+        {% if site_limit_reached %}
+          <p class="mt-4 text-sm font-medium text-red-700">Plan limit reached.</p>
+          <a href="{% url 'pricing' %}" class="pf-link mt-2 inline-block text-sm">View pricing plans</a>
+        {% endif %}
+      </div>
     </div>
 
     {% if active_site_count > 0 %}
-      <button
-        type="button"
-        data-action="click->sitemap#toggleForm"
-        data-sitemap-target="toggleButton"
-        class="ca-btn ca-btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-        {% if site_limit_reached %}disabled{% endif %}
-      >
-        Add sitemap
-      </button>
-    {% else %}
-      <button
-        type="button"
-        data-action="click->sitemap#showOnboarding"
-        class="ca-btn ca-btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-        {% if site_limit_reached %}disabled{% endif %}
-      >
-        Add sitemap
-      </button>
-    {% endif %}
-  </div>
-
-  {% if site_limit_reached %}
-    <div class="ca-panel-muted mt-6 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-sm font-black text-ca-ink">
-        Plan limit reached: {{ active_site_count }} / {{ site_limit }} active site{{ site_limit|pluralize }}.
-      </p>
-      <a href="{% url 'pricing' %}" class="ca-btn ca-btn-secondary">Upgrade</a>
-    </div>
-  {% endif %}
-
-  {% if active_site_count > 0 %}
-    <form method="get" class="ca-panel mt-6 grid gap-4 p-5 md:grid-cols-[14rem_1fr_auto] md:items-end">
-      <div>
-        <label for="client-filter" class="ca-label">Client</label>
-        <select id="client-filter" name="client" class="ca-field mt-2">
-          <option value="">All clients</option>
-          {% for client_label in client_options %}
-            <option value="{{ client_label }}" {% if selected_client == client_label %}selected{% endif %}>{{ client_label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div>
-        <label for="site-search" class="ca-label">Search</label>
-        <input id="site-search" type="text" name="q" value="{{ search_query }}" placeholder="example.com or client name" class="ca-field mt-2" />
-      </div>
-      <button type="submit" class="ca-btn ca-btn-secondary">Filter</button>
-    </form>
-
-    <div class="mt-6 hidden" data-sitemap-target="formContainer">
-      <form method="post" class="ca-panel p-5">
+    <div class="pf-panel mt-8 hidden p-5" data-sitemap-target="formContainer">
+      <form method="post">
         {% csrf_token %}
-        {{ form.non_field_errors }}
-        <div class="grid gap-4 lg:grid-cols-[1fr_16rem_auto] lg:items-end">
+        <div class="grid gap-4 md:grid-cols-2">
+          {{ form.non_field_errors }}
           <div>
             {{ form.sitemap_url.errors | safe }}
-            <label for="{{ form.sitemap_url.id_for_label }}" class="ca-label">Sitemap URL</label>
-            <div class="mt-2">
-              {{ form.sitemap_url }}
-            </div>
-            <p class="ca-help">Paste a sitemap URL and Cleanapp will add its pages to the review queue.</p>
+            <label for="{{ form.sitemap_url.id_for_label }}" class="pf-label">Sitemap URL</label>
+            {{ form.sitemap_url }}
+            <p class="pf-help">Use the full URL, for example https://example.com/sitemap.xml.</p>
           </div>
           <div>
             {{ form.client_label.errors | safe }}
-            <label for="{{ form.client_label.id_for_label }}" class="ca-label">Client label</label>
-            <div class="mt-2">
-              {{ form.client_label }}
-            </div>
+            <label for="{{ form.client_label.id_for_label }}" class="pf-label">Client label</label>
+            {{ form.client_label }}
+            <p class="pf-help">Optional grouping for clients or workspaces.</p>
           </div>
-          <div class="flex gap-2">
-            <button type="button" data-action="click->sitemap#toggleForm" class="ca-btn ca-btn-secondary">Cancel</button>
-            <button type="submit" class="ca-btn ca-btn-primary disabled:cursor-not-allowed disabled:opacity-50" {% if site_limit_reached %}disabled{% endif %}>Add sitemap</button>
-          </div>
+        </div>
+        <div class="mt-5 flex justify-end gap-3">
+          <button type="button" data-action="click->sitemap#toggleForm" class="pf-button-secondary">Cancel</button>
+          <button type="submit" class="pf-button-primary" {% if site_limit_reached %}disabled{% endif %}>Add sitemap</button>
         </div>
       </form>
     </div>
+    {% endif %}
 
-    <div class="mt-8 grid gap-4 lg:grid-cols-[1fr_18rem]">
-      <section class="ca-panel overflow-hidden">
-        <div class="flex items-center justify-between border-b border-[var(--ca-line)] px-5 py-4">
-          <div>
-            <h2 class="text-lg font-black text-ca-ink">Tracked sites</h2>
-            <p class="text-sm font-semibold text-ca-muted">{{ active_site_count }} / {{ site_limit }} active site{{ site_limit|pluralize }}</p>
-          </div>
-          <span class="ca-status ca-status-done">Active</span>
+    <form method="get" class="pf-panel mt-8 p-5">
+      <div class="grid gap-4 md:grid-cols-[16rem_1fr_auto] md:items-end">
+        <div>
+          <label for="client-filter" class="pf-label">Client</label>
+          <select id="client-filter" name="client" class="pf-input mt-1">
+            <option value="">All clients</option>
+            {% for client_label in client_options %}
+              <option value="{{ client_label }}" {% if selected_client == client_label %}selected{% endif %}>{{ client_label }}</option>
+            {% endfor %}
+          </select>
         </div>
+        <div>
+          <label for="site-search" class="pf-label">Search</label>
+          <input id="site-search" type="text" name="q" value="{{ search_query }}" placeholder="example.com or client name" class="pf-input mt-1" />
+        </div>
+        <button type="submit" class="pf-button-secondary">Filter sites</button>
+      </div>
+    </form>
 
-        <ul role="list" class="divide-y divide-[var(--ca-line)]">
+    <section class="mt-8">
+      {% if active_site_count > 0 %}
+      <div class="overflow-hidden rounded-2xl border border-[color:var(--pf-line)] bg-white">
+        <ul role="list" class="divide-y divide-[color:var(--pf-line)]">
           {% for sitemap in sitemaps %}
-          <li class="p-5 transition hover:bg-[var(--ca-surface)]" data-sitemap-target="item">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <li class="p-5 transition hover:bg-[color:var(--pf-panel-muted)]" data-sitemap-target="item">
+            <div class="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
               <div class="min-w-0">
-                <a href="{% url 'sitemap_detail' sitemap.id %}" class="break-all text-base font-black text-ca-ink hover:text-[var(--ca-primary)]">
+                <a href="{% url 'sitemap_detail' sitemap.id %}" class="break-all text-sm font-semibold text-[color:var(--pf-ink)] hover:text-[color:var(--pf-brand-dark)]">
                   {{ sitemap.sitemap_url }}
                 </a>
-                <div class="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold text-ca-muted">
-                  <span>Added {{ sitemap.created_at|date:"M d, Y" }} at {{ sitemap.created_at|time:"h:i A" }}</span>
-                  <span class="ca-status ca-status-review">
+                <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-[color:var(--pf-muted)]">
+                  <span class="pf-badge">
                     {% if sitemap.client_label %}{{ sitemap.client_label }}{% else %}Unlabeled{% endif %}
                   </span>
+                  <span>Added {{ sitemap.created_at|date:"M d, Y" }}</span>
                 </div>
               </div>
-
-              <div class="flex shrink-0 items-center gap-2">
-                <a href="{% url 'sitemap_detail' sitemap.id %}" class="ca-btn ca-btn-secondary">Open queue</a>
+              <div class="flex items-center gap-2 md:justify-end">
+                <a href="{% url 'sitemap_detail' sitemap.id %}" class="pf-button-secondary">Open pages</a>
                 <button
                   type="button"
                   data-action="click->sitemap#delete"
                   data-sitemap-id="{{ sitemap.id }}"
                   data-sitemap-url="{{ sitemap.sitemap_url }}"
-                  class="ca-icon-btn text-[var(--ca-danger)]"
+                  class="rounded-xl px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   title="Archive sitemap"
                 >
-                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
+                  Archive
                 </button>
               </div>
             </div>
           </li>
           {% empty %}
-          <li class="p-8 text-center">
-            <p class="text-sm font-black text-ca-muted">No active sitemaps match the current filters.</p>
+          <li class="p-8 text-center text-sm text-[color:var(--pf-muted)]">
+            No active sitemaps match the current filters.
           </li>
           {% endfor %}
         </ul>
-      </section>
-
-      <aside class="space-y-4">
-        <div class="ca-panel-muted p-5">
-          <p class="text-sm font-black text-ca-muted">Plan usage</p>
-          <p class="mt-2 text-3xl font-black tracking-[-0.03em] text-ca-ink">{{ active_site_count }} / {{ site_limit }}</p>
-          <p class="ca-copy mt-3 text-sm">
-            Archived sites stop counting toward the active site limit and can be re-enabled from Settings.
-          </p>
-        </div>
-        <div class="ca-panel p-5">
-          <p class="text-sm font-black text-ca-muted">Tip</p>
-          <p class="mt-2 text-sm font-semibold leading-6 text-ca-ink">
-            Start with pages that sell, explain pricing, or onboard users. Those pages age fastest.
-          </p>
-        </div>
-      </aside>
-    </div>
-  {% else %}
-    <section class="mt-10 grid gap-5 lg:grid-cols-[1fr_0.7fr]">
-      <div class="ca-panel p-6 sm:p-8">
-        <h2 class="text-2xl font-black tracking-[-0.02em] text-ca-ink">No active sitemaps yet</h2>
-        <p class="ca-copy mt-3 max-w-xl">
-          Add your first sitemap and Cleanapp will discover the pages you should review over time.
+      </div>
+      {% else %}
+      <div class="pf-panel-muted p-8 text-center">
+        <h2 class="text-xl font-semibold text-[color:var(--pf-ink)]">No active sites yet</h2>
+        <p class="mx-auto mt-3 max-w-md text-sm leading-6 text-[color:var(--pf-muted)]">
+          Add a sitemap to start tracking pages and sending review reminders.
         </p>
-        <button type="button" data-action="click->sitemap#showOnboarding" class="ca-btn ca-btn-primary mt-6 disabled:cursor-not-allowed disabled:opacity-50" {% if site_limit_reached %}disabled{% endif %}>
+        <button type="button" data-action="click->sitemap#showOnboarding" class="pf-button-primary mt-5">
           Add sitemap
         </button>
       </div>
-      <div class="ca-panel-muted p-6">
-        <p class="text-sm font-black text-ca-muted">Example</p>
-        <div class="mt-4 rounded-xl bg-white p-4">
-          <p class="font-black text-ca-ink">https://example.com/sitemap.xml</p>
-          <p class="ca-copy mt-2 text-sm">Cleanapp reads the URLs, stores the pages, and starts a review cadence.</p>
-        </div>
-      </div>
+      {% endif %}
     </section>
-  {% endif %}
-</div>
+  </div>
 {% endblock content %}

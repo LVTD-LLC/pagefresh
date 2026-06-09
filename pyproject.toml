@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "cleanapp"
+name = "pagefresh"
 version = "0.1.0"
-description = "Daily reminder for the pages that need polish."
+description = "Scheduled page review reminders for every sitemap."
 authors = ["Rasul Kireev <me@rasulkireev.com>"]
 
 [tool.poetry.dependencies]

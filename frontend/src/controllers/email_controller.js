@@ -112,37 +112,40 @@ export default class extends Controller {
     const emailItem = document.createElement("div");
     emailItem.setAttribute("data-email-item", "");
     emailItem.className =
-      "flex flex-col gap-3 rounded-xl border border-[var(--ca-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between";
+      "flex flex-col gap-3 rounded-2xl border border-[color:var(--pf-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between";
 
-    emailItem.innerHTML = `
-      <div class="flex flex-1 items-start gap-3">
-        <input
-          type="checkbox"
-          ${enabled ? "checked" : ""}
-          data-email-id="${emailId}"
-          data-action="change->email#toggleEmail"
-          class="mt-1 h-4 w-4 rounded border-[var(--ca-line)] text-[var(--ca-primary)] focus:ring-[var(--ca-primary)]"
-        />
-        <div class="min-w-0 flex-1">
-          <p class="break-all text-sm font-black text-ca-ink">${emailAddress}</p>
-          <p class="mt-1 text-xs font-bold">
-            ${
-              enabled
-                ? '<span class="text-[var(--ca-success)]">Notifications enabled</span>'
-                : '<span class="text-ca-muted">Notifications disabled</span>'
-            }
-          </p>
-        </div>
-      </div>
-      <button
-        type="button"
-        data-email-id="${emailId}"
-        data-action="click->email#deleteEmail"
-        class="ca-btn ca-btn-danger"
-      >
-        Remove
-      </button>
-    `;
+    const emailContent = document.createElement("label");
+    emailContent.className = "flex flex-1 items-start gap-3";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = enabled;
+    checkbox.dataset.emailId = String(emailId);
+    checkbox.dataset.action = "change->email#toggleEmail";
+    checkbox.className = "mt-1 h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600";
+
+    const textContent = document.createElement("span");
+    textContent.className = "min-w-0";
+
+    const emailText = document.createElement("span");
+    emailText.className = "block break-all text-sm font-semibold text-[color:var(--pf-ink)]";
+    emailText.textContent = emailAddress;
+
+    const statusText = document.createElement("span");
+    statusText.className = "block text-xs text-[color:var(--pf-muted)]";
+    statusText.textContent = enabled ? "Notifications enabled" : "Notifications disabled";
+
+    textContent.append(emailText, statusText);
+    emailContent.append(checkbox, textContent);
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.dataset.emailId = String(emailId);
+    removeButton.dataset.action = "click->email#deleteEmail";
+    removeButton.className = "self-start text-sm font-semibold text-red-700 hover:text-red-900 sm:self-center";
+    removeButton.textContent = "Remove";
+
+    emailItem.append(emailContent, removeButton);
 
     this.listTarget.appendChild(emailItem);
   }

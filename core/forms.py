@@ -75,13 +75,22 @@ class SitemapForm(forms.ModelForm):
         fields = ["sitemap_url", "client_label"]
         widgets = {
             "sitemap_url": forms.URLInput(
-                attrs={"class": "ca-field mt-1", "placeholder": "https://example.com/sitemap.xml"}
+                attrs={
+                    "class": "pf-input mt-1",
+                    "placeholder": "https://example.com/sitemap.xml",
+                }
             ),
             "client_label": forms.TextInput(
-                attrs={"class": "ca-field mt-1", "placeholder": "Acme SEO (optional)"}
+                attrs={
+                    "class": "pf-input mt-1",
+                    "placeholder": "Client or workspace name",
+                }
             ),
         }
-        labels = {"sitemap_url": "Sitemap URL", "client_label": "Client label"}
+        labels = {
+            "sitemap_url": "Sitemap URL",
+            "client_label": "Client label",
+        }
 
     def clean_client_label(self):
         return (self.cleaned_data.get("client_label") or "").strip()
@@ -93,17 +102,23 @@ class SitemapSettingsForm(forms.ModelForm):
         fields = ["client_label", "pages_per_review", "review_cadence", "is_active"]
         widgets = {
             "client_label": forms.TextInput(
-                attrs={"class": "ca-field", "placeholder": "Client label"}
+                attrs={
+                    "class": "pf-input",
+                    "placeholder": "Client label",
+                }
             ),
             "pages_per_review": forms.NumberInput(
-                attrs={"class": "ca-field", "min": "1", "max": "50"}
+                attrs={
+                    "class": "pf-input",
+                    "min": "1",
+                    "max": "50",
+                }
             ),
-            "review_cadence": forms.Select(attrs={"class": "ca-field"}),
+            "review_cadence": forms.Select(attrs={"class": "pf-input"}),
             "is_active": forms.CheckboxInput(
                 attrs={
                     "class": (
-                        "h-4 w-4 rounded border-[var(--ca-line)] "
-                        "text-[var(--ca-primary)] focus:ring-[var(--ca-primary)]"
+                        "h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
                     )
                 }
             ),

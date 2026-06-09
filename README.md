@@ -1,18 +1,18 @@
 <p align="center">
-  <img src="#" width="230" alt="Cleanapp Logo">
+  <img src="#" width="230" alt="PageFresh Logo">
 </p>
 
 <!--  -->
 <div align="center">
-  <b>Cleanapp</b>
-  <b>Daily reminder for the pages that need polish.</b>
+  <b>PageFresh</b>
+  <b>Scheduled page review reminders for every sitemap.</b>
 </div>
 
 ***
 
 ## Overview
 
-- Add info about your project here
+PageFresh imports sitemap pages, tracks review status, and sends scheduled email digests so website owners and agencies can keep content current.
 
 ***
 
@@ -36,17 +36,17 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/rasulkireev/cleanapp)
 
-**Note:** This should work out of the box with Render's free tier if you provide the AI API keys. Here's what you need to know about the limitations:
+**Note:** This should work out of the box with Render's free tier for light PageFresh usage. Here's what you need to know about the limitations:
 
-- **Worker Service Limitation**: The worker service is not a dedicated worker type (those are only available on paid plans). For the free tier, I had to use a web service through a small hack, but it works fine for most use cases.
+- **Worker Service Limitation**: The worker service is not a dedicated worker type (those are only available on paid plans). For the free tier, I had to use a web service through a small hack, but it works fine for small review queues.
 
-- **Memory Constraints**: The free web service has a 512 MB RAM limit, which can cause issues with **automated background tasks only**. When you add a project, it runs a suite of background tasks to analyze your website, generate articles, keywords, and other content. These automated processes can hit memory limits and potentially cause failures.
+- **Memory Constraints**: The free web service has a 512 MB RAM limit, which can cause issues with **automated background tasks only**. Large sitemaps and busy digest schedules may need a paid instance.
 
-- **Manual Tasks Work Fine**: However, if you perform tasks manually (like generating a single article), these typically use the web service instead of the worker and should work reliably since it's one request at a time.
+- **Manual Tasks Work Fine**: Reviewing pages in the dashboard typically uses the web service and should be reliable because it is one request at a time.
 
 - **Upgrade Recommendation**: If you do upgrade to a paid plan, use the actual worker service instead of the web service workaround for better automated task reliability.
 
-**Reality Check**: The website functionality should be usable on the free tier - you'll only pay for API costs. Manual operations work fine, but automated background tasks (especially when adding multiple projects) may occasionally fail due to memory constraints. It's not super comfortable for heavy automated use, but perfectly functional for manual content generation.
+**Reality Check**: PageFresh should be usable on the free tier for a small number of sites. Automated sitemap imports and email digests may occasionally fail on heavy workloads due to memory constraints.
 
 If you know of any other services like Render that allow deployment via a button and provide free Redis, Postgres, and web services, please let me know in the [Issues](https://github.com/rasulkireev/cleanapp/issues) section. I can try to create deployments for those. Bear in mind that free services are usually not large enough to run this application reliably.
 
@@ -63,7 +63,7 @@ Copy the contents of `.env.example` into `.env` and update all the necessary val
 
 Copy the contents of `docker-compose-prod.yml` into `docker-compose.yml` and run the suggested command from the top of the `docker-compose-prod.yml` file.
 
-How you are going to expose the backend container is up to you. I usually do it via Nginx Reverse Proxy with `http://cleanapp-backend-1:80` UPSTREAM_HTTP_ADDRESS.
+How you are going to expose the backend container is up to you. Existing compose examples may still use the legacy `cleanapp` project name, for example `http://cleanapp-backend-1:80` as `UPSTREAM_HTTP_ADDRESS`.
 
 
 ### Pure Python / Django deployment

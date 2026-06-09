@@ -2,37 +2,35 @@
 
 ## Overview
 
-Cleanapp uses a sharp indie SaaS visual system: high-contrast ink, a crimson brand anchor, lime confirmation accents, and compact app surfaces. Marketing pages can use stronger color and larger type. Authenticated app screens stay calmer, with the accent reserved for actions, status, and orientation.
+PageFresh uses a calm maintenance-product visual system: high-contrast ink, a deep green brand anchor, soft green status accents, and compact app surfaces. Marketing pages should make the sitemap review loop obvious in the first viewport. Authenticated app screens stay restrained, with the accent reserved for actions, status, and orientation.
 
 ## Color
 
-Use OKLCH tokens in CSS. The palette is anchored by the impeccable seed hue near 20 degrees and balanced with a cooler chartreuse accent.
+Use OKLCH tokens in CSS. The palette is anchored by a practical green brand color with neutral blue-gray text and borders.
 
 ```css
 :root {
-  --ca-bg: oklch(1 0 0);
-  --ca-surface: oklch(0.975 0.006 95);
-  --ca-surface-strong: oklch(0.925 0.018 95);
-  --ca-ink: oklch(0.135 0.018 250);
-  --ca-muted: oklch(0.405 0.024 250);
-  --ca-primary: oklch(0.43 0.14 20);
-  --ca-primary-strong: oklch(0.33 0.12 20);
-  --ca-accent: oklch(0.78 0.18 125);
-  --ca-accent-soft: oklch(0.93 0.08 125);
-  --ca-line: oklch(0.88 0.01 95);
-  --ca-warning: oklch(0.68 0.16 55);
-  --ca-success: oklch(0.58 0.14 145);
-  --ca-danger: oklch(0.55 0.19 25);
+  --pf-ink: oklch(0.19 0.028 250);
+  --pf-muted: oklch(0.42 0.035 250);
+  --pf-line: oklch(0.88 0.018 250);
+  --pf-surface: oklch(0.985 0.006 250);
+  --pf-panel: oklch(1 0 0);
+  --pf-panel-muted: oklch(0.96 0.012 250);
+  --pf-brand: oklch(0.51 0.14 166);
+  --pf-brand-dark: oklch(0.38 0.12 166);
+  --pf-brand-soft: oklch(0.92 0.05 166);
+  --pf-warning: oklch(0.58 0.14 72);
+  --pf-danger: oklch(0.52 0.16 26);
 }
 ```
 
 ## Typography
 
-Marketing surfaces use the system stack with strong weight contrast and tight, readable display sizes. Product surfaces use the same family for speed and consistency. Avoid oversized display type inside app panels.
+Marketing surfaces use the system stack with strong weight contrast and readable display sizes. Product surfaces use the same family for speed and consistency. Avoid oversized display type inside app panels, and keep letter spacing at zero.
 
 ## Layout
 
-Marketing should feel poster-like in the first viewport, with a visible product artifact rather than abstract decoration. App screens use a compact shell, a left navigation rail on desktop, sticky top controls on smaller screens, and data-first content regions.
+Marketing should show the product artifact and leave a hint of the next section visible in the first viewport. App screens use a compact top shell, focused form surfaces, and data-first content regions.
 
 ## Components
 

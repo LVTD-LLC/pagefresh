@@ -1,21 +1,21 @@
 {% if messages %}
 <div class="fixed right-4 top-4 z-50 space-y-3" data-controller="reveal">
   {% for message in messages %}
-  <div data-reveal-target="item" data-message-id="{{ forloop.counter }}" class="ca-panel max-w-sm p-4 opacity-0 transition-all duration-300 ease-in-out translate-x-full {% if message.tags == 'error' %}border-[oklch(0.86_0.08_25)]{% else %}border-[oklch(0.84_0.09_145)]{% endif %}">
+  <div data-reveal-target="item" data-message-id="{{ forloop.counter }}" class="pf-panel max-w-sm p-4 opacity-0 transition-all duration-300 ease-in-out translate-x-full {% if message.tags == 'error' %}border-[oklch(0.86_0.08_25)]{% else %}border-[oklch(0.84_0.09_145)]{% endif %}">
     <div class="flex items-start">
       <div class="mr-3 flex-shrink-0">
         <svg class="h-5 w-5" viewBox="0 0 24 24">
-          <circle class="text-[var(--ca-line)]" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12"/>
-          <circle class="{% if message.tags == 'error' %}text-[var(--ca-danger)]{% else %}text-[var(--ca-success)]{% endif %}" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12" data-timer-circle/>
+          <circle class="text-[var(--pf-line)]" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12"/>
+          <circle class="{% if message.tags == 'error' %}text-[var(--pf-danger)]{% else %}text-[var(--pf-brand-dark)]{% endif %}" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12" data-timer-circle/>
         </svg>
       </div>
       <div class="flex-grow">
-        <p class="text-sm font-semibold {% if message.tags == 'error' %}text-[var(--ca-danger)]{% else %}text-ca-ink{% endif %}">
+        <p class="text-sm font-semibold {% if message.tags == 'error' %}text-[var(--pf-danger)]{% else %}text-[color:var(--pf-ink)]{% endif %}">
           {{ message }}
         </p>
       </div>
       <div class="ml-3 flex-shrink-0">
-        <button data-action="click->reveal#hide" data-message-id="{{ forloop.counter }}" type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md text-ca-muted hover:text-ca-ink">
+        <button data-action="click->reveal#hide" data-message-id="{{ forloop.counter }}" type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md text-[color:var(--pf-muted)] hover:text-[color:var(--pf-ink)]">
           <span class="sr-only">Dismiss</span>
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

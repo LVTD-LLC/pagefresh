@@ -1,7 +1,7 @@
 {
-  "name": "cleanapp",
+  "name": "pagefresh",
   "version": "1.0.0",
-  "description": "Daily reminder for the pages that need polish.",
+  "description": "Scheduled page review reminders for every sitemap.",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config frontend/webpack/webpack.config.prod.js",
     "start": "webpack serve --config frontend/webpack/webpack.config.dev.js",

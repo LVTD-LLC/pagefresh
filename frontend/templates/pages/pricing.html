@@ -2,105 +2,101 @@
 {% load webpack_loader static %}
 
 {% block meta %}
-<title>Cleanapp Pricing</title>
-<meta name="description" content="Simple pricing for Cleanapp page review reminders." />
-<meta name="keywords" content="Cleanapp, pricing, sitemap review, website maintenance" />
+<title>PageFresh - Pricing</title>
+<meta name="description" content="Pricing for PageFresh sitemap review reminders." />
+<meta name="keywords" content="PageFresh pricing, sitemap review pricing, website maintenance reminders" />
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://{{ request.get_host }}{% url 'pricing' %}"/>
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Cleanapp Pricing" />
+<meta property="og:title" content="PageFresh - Pricing" />
 <meta property="og:url" content="https://{{ request.get_host }}{% url 'pricing' %}"/>
-<meta property="og:description" content="Simple pricing for Cleanapp page review reminders." />
-<meta property="og:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=Cleanapp Pricing&subtitle=Simple page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
+<meta property="og:description" content="Pricing for PageFresh sitemap review reminders." />
+<meta property="og:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=PageFresh Pricing&subtitle=Sitemap review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
 <meta property="og:locale" content="en_US" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:creator" content="@rasulkireev" />
 <meta name="twitter:site" content="@rasulkireev" />
-<meta name="twitter:title" content="Cleanapp Pricing" />
-<meta name="twitter:description" content="Simple pricing for Cleanapp page review reminders." />
-<meta name="twitter:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=Cleanapp Pricing&subtitle=Simple page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
+<meta name="twitter:title" content="PageFresh - Pricing" />
+<meta name="twitter:description" content="Pricing for PageFresh sitemap review reminders." />
+<meta name="twitter:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=PageFresh Pricing&subtitle=Sitemap review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
 {% endblock meta %}
 
 {% block content %}
-<section class="ca-wrap py-16 sm:py-24">
+<section class="pf-shell py-16 sm:py-20">
   <div class="max-w-3xl">
-    <span class="ca-kicker">Hosted Cleanapp</span>
-    <h1 class="ca-heading-balance mt-6 text-5xl font-black tracking-[-0.03em] text-ca-ink sm:text-6xl">
-      Free for one site. Built for client stacks after that.
-    </h1>
-    <p class="ca-copy mt-6 text-lg">
-      Start with {{ free_site_limit }} active site{{ free_site_limit|pluralize }}. Upgrade when Cleanapp becomes the operating rhythm for more client pages and review queues.
+    <p class="text-sm font-semibold text-[color:var(--pf-brand-dark)]">Pricing</p>
+    <h1 class="pf-page-title mt-2">Plans for recurring page reviews.</h1>
+    <p class="mt-4 max-w-2xl text-base leading-7 text-[color:var(--pf-muted)]">
+      Start free with {{ free_site_limit }} active site{{ free_site_limit|pluralize }}. Upgrade when more client sites need dependable review queues.
     </p>
   </div>
 
-  <div class="mt-12 grid gap-5 lg:grid-cols-2">
-    {% for plan in plans %}
-      <article class="ca-panel p-6 sm:p-8">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <h2 id="tier-{{ plan.key }}" class="text-2xl font-black tracking-[-0.02em] text-ca-ink">{{ plan.display_name }}</h2>
-            <p class="ca-copy mt-2">
-              {% if plan.key == "agency" %}
-                For agencies keeping a book of client sites in review.
-              {% else %}
-                For founders and small teams keeping a handful of sites current.
-              {% endif %}
-            </p>
-          </div>
-          <span class="ca-status {% if plan.key == 'agency' %}ca-status-done{% else %}ca-status-review{% endif %}">
-            {{ plan.trial_days }} day trial
-          </span>
-        </div>
+  <div class="mt-10 grid gap-5 lg:grid-cols-3">
+    <div class="pf-panel-muted p-6">
+      <h2 class="text-xl font-semibold text-[color:var(--pf-ink)]">Free</h2>
+      <p class="mt-4 text-4xl font-semibold text-[color:var(--pf-ink)]">{{ free_site_limit }}</p>
+      <p class="mt-1 text-sm text-[color:var(--pf-muted)]">active site{{ free_site_limit|pluralize }}</p>
+      <ul role="list" class="mt-6 grid gap-3 text-sm leading-6 text-[color:var(--pf-muted)]">
+        <li>Track one sitemap</li>
+        <li>Receive review digest emails</li>
+        <li>Mark pages reviewed from the queue</li>
+      </ul>
+      {% if user.is_authenticated %}
+        <a href="{% url 'home' %}" class="pf-button-secondary mt-8 w-full">Open dashboard</a>
+      {% else %}
+        <a href="{% url 'account_signup' %}" class="pf-button-secondary mt-8 w-full">Start free</a>
+      {% endif %}
+    </div>
 
-        <p class="mt-8 flex items-end gap-2">
-          <span class="text-6xl font-black tracking-[-0.04em] text-ca-ink">{{ plan.site_limit }}</span>
-          <span class="pb-2 text-sm font-black text-ca-muted">active sites</span>
-        </p>
-
-        {% if user.is_authenticated %}
-          {% if has_pro_subscription and current_plan_key == plan.key %}
-            <span aria-describedby="tier-{{ plan.key }}" class="ca-btn ca-btn-accent mt-8 w-full">Current plan</span>
-          {% else %}
-            <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan=plan.key %}">
-              {% csrf_token %}
-              <button type="submit" aria-describedby="tier-{{ plan.key }}" class="ca-btn ca-btn-primary mt-8 w-full">
-                Choose {{ plan.display_name }}
-              </button>
-            </form>
-          {% endif %}
+    <div class="pf-panel p-6">
+      <h2 class="text-xl font-semibold text-[color:var(--pf-ink)]">Starter</h2>
+      <p class="mt-4 text-4xl font-semibold text-[color:var(--pf-ink)]">{{ starter_site_limit }}</p>
+      <p class="mt-1 text-sm text-[color:var(--pf-muted)]">active site{{ starter_site_limit|pluralize }}</p>
+      <ul role="list" class="mt-6 grid gap-3 text-sm leading-6 text-[color:var(--pf-muted)]">
+        <li>Client labels for grouping sites</li>
+        <li>Custom pages per review email</li>
+        <li>Daily, weekly, or monthly cadence</li>
+      </ul>
+      {% if user.is_authenticated %}
+        {% if has_pro_subscription and current_plan_key == "starter" %}
+          <span class="mt-8 block rounded-xl bg-[color:var(--pf-brand-soft)] px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-brand-dark)]">Current plan is active</span>
+        {% elif has_pro_subscription and current_plan_key == "agency" %}
+          <span class="mt-8 block rounded-xl bg-[color:var(--pf-panel-muted)] px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-muted)]">Included in Agency</span>
         {% else %}
-          <a href="{% url 'account_signup' %}" aria-describedby="tier-{{ plan.key }}" class="ca-btn ca-btn-primary mt-8 w-full">
-            Start with {{ plan.display_name }}
-          </a>
+          <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='starter' %}" class="mt-8">
+            {% csrf_token %}
+            <button type="submit" class="pf-button-primary w-full">Choose Starter</button>
+          </form>
         {% endif %}
+      {% else %}
+        <a href="{% url 'account_signup' %}" class="pf-button-primary mt-8 w-full">Choose Starter</a>
+      {% endif %}
+    </div>
 
-        <ul role="list" class="mt-8 space-y-4 text-sm font-semibold text-ca-ink">
-          <li class="flex gap-3">
-            <span class="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-[var(--ca-accent)]"></span>
-            {{ plan.site_limit }} active sitemap{{ plan.site_limit|pluralize }}
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-[var(--ca-accent)]"></span>
-            Client labels and archive controls
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-[var(--ca-accent)]"></span>
-            Scheduled review reminders
-          </li>
-        </ul>
-      </article>
-    {% empty %}
-      <article class="ca-panel p-6 sm:p-8 lg:col-span-2">
-        <h2 class="text-2xl font-black tracking-[-0.02em] text-ca-ink">Plans are being configured.</h2>
-        <p class="ca-copy mt-3">Hosted checkout is not available in this environment yet.</p>
-      </article>
-    {% endfor %}
-  </div>
-
-  <div class="mt-8 rounded-xl border border-[var(--ca-line)] bg-[var(--ca-surface)] p-5 text-sm text-ca-muted">
-    Cleanapp can also be self-hosted from <a href="https://github.com/rasulkireev/cleanapp" class="font-black text-ca-ink hover:text-ca-primary">the GitHub repository</a>.
+    <div class="rounded-2xl bg-[color:var(--pf-ink)] p-6 text-white">
+      <h2 class="text-xl font-semibold">Agency</h2>
+      <p class="mt-4 text-4xl font-semibold">{{ agency_site_limit }}</p>
+      <p class="mt-1 text-sm text-white/75">active site{{ agency_site_limit|pluralize }}</p>
+      <ul role="list" class="mt-6 grid gap-3 text-sm leading-6 text-white/75">
+        <li>More room for client portfolios</li>
+        <li>Digest summaries by client and site</li>
+        <li>Archive old sitemaps without losing history</li>
+      </ul>
+      {% if user.is_authenticated %}
+        {% if has_pro_subscription and current_plan_key == "agency" %}
+          <span class="mt-8 block rounded-xl bg-white px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--pf-ink)]">Current plan is active</span>
+        {% else %}
+          <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='agency' %}" class="mt-8">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'account_signup' %}" class="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</a>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock content %}
@@ -110,9 +106,9 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Cleanapp Pricing",
-    "description": "Simple pricing for Cleanapp page review reminders.",
-    "thumbnailUrl": "https://osig.app/g?site=x&style=logo&font=markerfelt&title=Cleanapp Pricing&subtitle=Simple page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}",
+    "name": "PageFresh - Pricing",
+    "description": "Pricing for PageFresh sitemap review reminders.",
+    "thumbnailUrl": "https://osig.app/g?site=x&style=logo&font=markerfelt&title=PageFresh Pricing&subtitle=Sitemap review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}",
     "url": "https://{{ request.get_host }}{% url 'pricing' %}",
     "author": {
       "@type": "Person",

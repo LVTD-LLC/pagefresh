@@ -4,41 +4,38 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <!-- Other meta stuff -->
-  <link rel="apple-touch-icon" href="{% static 'vendors/images/logo.png' %}" />
-  <link rel="apple-touch-icon" href="{% static 'vendors/images/logo.png' %}" />
   <link rel="icon" type="image/png" sizes="16x16 32x32 500x500" href="{% static 'vendors/images/logo.png' %}" />
+  <link rel="apple-touch-icon" href="{% static 'vendors/images/logo.png' %}" />
 
   {% block meta %}
-  <title>Cleanapp</title>
-  <meta name="description" content="Daily reminder for the pages that need polish." />
-  <meta name="keywords" content="django" />
+  <title>PageFresh</title>
+  <meta name="description" content="Scheduled page review reminders for every sitemap." />
+  <meta name="keywords" content="website maintenance, sitemap review, content review reminders" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://{{ request.get_host }}/" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Cleanapp" />
+  <meta property="og:title" content="PageFresh" />
   <meta property="og:url" content="https://{{ request.get_host }}/" />
-  <meta property="og:description" content="Daily reminder for the pages that need polish." />
-  <meta property="og:image" content="https://osig.app/g?site=meta&style=logo&font=markerfelt&title=Cleanapp&subtitle=Daily reminder for the pages that need polish.&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
+  <meta property="og:description" content="Scheduled page review reminders for every sitemap." />
+  <meta property="og:image" content="https://osig.app/g?site=meta&style=logo&font=markerfelt&title=PageFresh&subtitle=Scheduled page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
   <meta property="og:locale" content="en_US" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:creator" content="@rasulkireev" />
   <meta name="twitter:site" content="@rasulkireev" />
-  <meta name="twitter:title" content="Cleanapp" />
-  <meta name="twitter:description" content="Daily reminder for the pages that need polish." />
-  <meta name="twitter:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=Cleanapp&subtitle=Daily reminder for the pages that need polish.&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
+  <meta name="twitter:title" content="PageFresh" />
+  <meta name="twitter:description" content="Scheduled page review reminders for every sitemap." />
+  <meta name="twitter:image" content="https://osig.app/g?site=x&style=logo&font=markerfelt&title=PageFresh&subtitle=Scheduled page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}" />
   {% endblock meta %}
 
   {% if posthog_api_key %}
   <script>
-      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
       posthog.init('{{ posthog_api_key }}', {
           api_host: 'https://us.i.posthog.com',
           defaults: '2025-05-24',
@@ -47,117 +44,93 @@
   </script>
   {% endif %}
 
-  <script defer data-domain="cleanapp.dev" src="https://plausible-v2.cr.lvtd.dev/js/script.outbound-links.js"></script>
+  <script defer data-domain="pagefresh.lvtd.dev" src="https://plausible-v2.cr.lvtd.dev/js/script.outbound-links.js"></script>
 
   {% stylesheet_pack 'index' %}
   {% javascript_pack 'index' attrs='defer' %}
 </head>
 
-<body class="ca-app" {% if request.user.is_authenticated %}data-controller="user-settings"{% endif %}>
+<body {% if request.user.is_authenticated %}data-controller="user-settings"{% endif %}>
   {% block default_messages %}
     {% include 'components/messages.html' with messages=messages %}
   {% endblock default_messages %}
 
-  <!-- Include the feedback component -->
   {% if user.is_authenticated %}
     {% include 'components/feedback.html' %}
   {% endif %}
 
-  <div class="min-h-screen lg:flex">
-    <aside class="hidden w-72 shrink-0 border-r border-[var(--ca-line)] bg-white lg:flex lg:min-h-screen lg:flex-col">
-      <div class="flex h-16 items-center gap-3 border-b border-[var(--ca-line)] px-5">
-        <a href="{% url 'home' %}" class="ca-brand" aria-label="Cleanapp dashboard">
-          <span class="ca-brand-badge">
-            <img src="{% static 'vendors/images/logo.png' %}" alt="" />
-          </span>
-          <span>Cleanapp</span>
-        </a>
-      </div>
+  <div class="min-h-screen">
+    <header class="sticky top-0 z-30 border-b border-[color:var(--pf-line)] bg-white/95 backdrop-blur">
+      <div class="pf-shell">
+        <div class="flex h-16 items-center justify-between gap-4">
+          <div class="flex min-w-0 items-center gap-6">
+            <a href="{% url 'home' %}" class="pf-wordmark shrink-0" aria-label="PageFresh dashboard">
+              <span class="pf-mark">PF</span>
+              <span class="text-lg">PageFresh</span>
+            </a>
 
-      <nav class="flex-1 space-y-1 px-3 py-4" aria-label="Dashboard navigation">
-        {% if user.is_authenticated %}
-          <a href="{% url 'home' %}" class="ca-nav-link w-full justify-start">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h16" />
-            </svg>
-            Sitemaps
-          </a>
-          <a href="{% url 'settings' %}" class="ca-nav-link w-full justify-start">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m4-4H8" />
-              <circle cx="12" cy="12" r="8" />
-            </svg>
-            Settings
-          </a>
-          {% if user.is_superuser %}
-          <a href="{% url 'admin_panel' %}" class="ca-nav-link w-full justify-start text-[var(--ca-danger)]">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4v6c0 4-3 7-8 8-5-1-8-4-8-8V7l8-4z" />
-            </svg>
-            Admin
-          </a>
-          {% endif %}
-        {% endif %}
-      </nav>
+            <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+              <a href="{% url 'home' %}" class="pf-nav-link">Sites</a>
+              <a href="{% url 'settings' %}" class="pf-nav-link">Settings</a>
+              {% if user.is_superuser %}
+                <a href="{% url 'admin_panel' %}" class="rounded-xl px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50">Admin</a>
+              {% endif %}
+            </nav>
+          </div>
 
-      <div class="border-t border-[var(--ca-line)] p-4">
-        {% if user.is_authenticated %}
-          <p class="mb-3 truncate text-sm font-bold text-ca-ink">{{ user.email|default:user.username }}</p>
-          <form method="post" action="{% url 'account_logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="ca-btn ca-btn-secondary w-full">Sign out</button>
-          </form>
-        {% else %}
-          <a href="{% url 'account_login' %}" class="ca-btn ca-btn-secondary w-full">Sign in</a>
-        {% endif %}
-      </div>
-    </aside>
+          <div class="hidden items-center gap-2 lg:flex">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="pf-button-secondary">Sign out</button>
+            </form>
+            {% else %}
+              <a href="{% url 'account_login' %}" class="pf-button-secondary">Sign in</a>
+              <a href="{% url 'account_signup' %}" class="pf-button-primary">Start free</a>
+            {% endif %}
+          </div>
 
-    <div class="min-w-0 flex-1">
-      <header class="sticky top-0 z-30 border-b border-[var(--ca-line)] bg-white lg:hidden">
-        <div class="flex h-16 items-center justify-between px-4">
-          <a href="{% url 'home' %}" class="ca-brand" aria-label="Cleanapp dashboard">
-            <span class="ca-brand-badge">
-              <img src="{% static 'vendors/images/logo.png' %}" alt="" />
-            </span>
-            <span>Cleanapp</span>
-          </a>
-
-          <div class="relative" data-controller="dropdown">
-            <button class="ca-icon-btn"
-                    aria-label="Toggle navigation"
-                    data-action="dropdown#toggle click@window->dropdown#hide">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
+          <div class="lg:hidden" data-controller="dropdown">
+            <button
+              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--pf-line)] bg-white"
+              aria-label="Toggle mobile menu"
+              data-action="dropdown#toggle click@window->dropdown#hide"
+            >
+              <span class="sr-only">Menu</span>
+              <span class="block h-4 w-5 border-y-2 border-[color:var(--pf-ink)]"></span>
             </button>
 
-            <div data-dropdown-target="menu" class="hidden ca-mobile-menu">
-              <nav class="p-2" aria-label="Mobile dashboard navigation">
-                {% if user.is_authenticated %}
-                  <a href="{% url 'home' %}" class="ca-nav-link w-full">Sitemaps</a>
-                  <a href="{% url 'settings' %}" class="ca-nav-link w-full">Settings</a>
+            <div data-dropdown-target="menu" class="pf-panel absolute left-4 right-4 top-16 hidden p-2">
+              <nav aria-label="Mobile navigation">
+                <ul class="grid gap-1">
+                  <li><a href="{% url 'home' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-[color:var(--pf-ink)] hover:bg-[color:var(--pf-panel-muted)]">Sites</a></li>
+                  <li><a href="{% url 'settings' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-[color:var(--pf-ink)] hover:bg-[color:var(--pf-panel-muted)]">Settings</a></li>
                   {% if user.is_superuser %}
-                    <a href="{% url 'admin_panel' %}" class="ca-nav-link w-full text-[var(--ca-danger)]">Admin</a>
+                    <li><a href="{% url 'admin_panel' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-red-700 hover:bg-red-50">Admin</a></li>
                   {% endif %}
-                  <form method="post" action="{% url 'account_logout' %}" class="mt-2">
-                    {% csrf_token %}
-                    <button type="submit" class="ca-btn ca-btn-secondary w-full">Sign out</button>
-                  </form>
-                {% else %}
-                  <a href="{% url 'account_login' %}" class="ca-btn ca-btn-secondary mt-2 w-full">Sign in</a>
-                {% endif %}
+                  {% if user.is_authenticated %}
+                    <li class="px-4 py-3">
+                      <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="text-sm font-semibold text-[color:var(--pf-ink)]">Sign out</button>
+                      </form>
+                    </li>
+                  {% else %}
+                    <li><a href="{% url 'account_login' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-[color:var(--pf-ink)] hover:bg-[color:var(--pf-panel-muted)]">Sign in</a></li>
+                    <li><a href="{% url 'account_signup' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-[color:var(--pf-brand-dark)] hover:bg-[color:var(--pf-brand-soft)]">Start free</a></li>
+                  {% endif %}
+                </ul>
               </nav>
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <main class="min-h-screen">
-        {% block content %}
-        {% endblock content %}
-      </main>
-    </div>
+    <main>
+      {% block content %}
+      {% endblock content %}
+    </main>
   </div>
 
   {% block schema %}
@@ -165,9 +138,9 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Cleanapp",
-      "description": "Daily reminder for the pages that need polish.",
-      "thumbnailUrl": "https://osig.app/g?site=x&style=logo&font=markerfelt&title=Cleanapp&subtitle=Daily reminder for the pages that need polish.&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}",
+      "name": "PageFresh",
+      "description": "Scheduled page review reminders for every sitemap.",
+      "thumbnailUrl": "https://osig.app/g?site=x&style=logo&font=markerfelt&title=PageFresh&subtitle=Scheduled page review reminders&image_url=https://{{ request.get_host }}{% static 'vendors/images/logo.png' %}",
       "url": "https://{{ request.get_host }}/",
       "author": {
         "@type": "Person",
@@ -178,7 +151,6 @@
     }
     </script>
   {% endblock schema %}
-
 </body>
 
 </html>

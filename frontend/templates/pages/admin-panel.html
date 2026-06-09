@@ -2,22 +2,22 @@
 {% load webpack_loader static %}
 
 {% block meta %}
-  <title>Admin Panel - Cleanapp</title>
+  <title>Admin Panel - PageFresh</title>
 {% endblock meta %}
 
 {% block content %}
-<div class="ca-wide-wrap py-6 sm:py-8 lg:py-10">
+<div class="pf-shell py-6 sm:py-8 lg:py-10">
   <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
     <div>
-      <p class="text-sm font-black text-ca-muted">Staff</p>
-      <h1 class="mt-2 text-4xl font-black tracking-[-0.03em] text-ca-ink">Admin panel</h1>
-      <p class="ca-copy mt-3 max-w-2xl">Monitor usage, trigger scheduled jobs, and inspect recent account activity.</p>
+      <p class="text-sm font-black text-[color:var(--pf-muted)]">Staff</p>
+      <h1 class="mt-2 text-4xl font-black text-[color:var(--pf-ink)]">Admin panel</h1>
+      <p class="text-base leading-7 text-[color:var(--pf-muted)] mt-3 max-w-2xl">Monitor usage, trigger scheduled jobs, and inspect recent account activity.</p>
     </div>
 
     <div class="flex flex-col gap-2 sm:flex-row">
       <form method="post" action="{% url 'trigger_schedule_review_emails' %}">
         {% csrf_token %}
-        <button type="submit" class="ca-btn ca-btn-secondary w-full sm:w-auto">
+        <button type="submit" class="pf-button-secondary w-full sm:w-auto">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
@@ -26,7 +26,7 @@
       </form>
       <form method="post" action="{% url 'trigger_schedule_sitemap_reparse' %}">
         {% csrf_token %}
-        <button type="submit" class="ca-btn ca-btn-secondary w-full sm:w-auto">
+        <button type="submit" class="pf-button-secondary w-full sm:w-auto">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
@@ -35,7 +35,7 @@
       </form>
       <form method="post" action="{% url 'send_test_email' %}">
         {% csrf_token %}
-        <button type="submit" class="ca-btn ca-btn-primary w-full sm:w-auto">
+        <button type="submit" class="pf-button-primary w-full sm:w-auto">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
@@ -46,40 +46,40 @@
   </div>
 
   <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-    <article class="ca-panel p-5">
-      <p class="text-sm font-black text-ca-muted">Total users</p>
-      <p class="mt-3 text-4xl font-black tracking-[-0.03em] text-ca-ink">{{ total_users }}</p>
-      <p class="mt-3 text-xs font-bold text-ca-muted">Week: <span class="text-ca-ink">{{ new_users_week }}</span> / Month: <span class="text-ca-ink">{{ new_users_month }}</span></p>
+    <article class="pf-panel p-5">
+      <p class="text-sm font-black text-[color:var(--pf-muted)]">Total users</p>
+      <p class="mt-3 text-4xl font-black text-[color:var(--pf-ink)]">{{ total_users }}</p>
+      <p class="mt-3 text-xs font-bold text-[color:var(--pf-muted)]">Week: <span class="text-[color:var(--pf-ink)]">{{ new_users_week }}</span> / Month: <span class="text-[color:var(--pf-ink)]">{{ new_users_month }}</span></p>
     </article>
 
-    <article class="ca-panel p-5">
-      <p class="text-sm font-black text-ca-muted">Subscribed users</p>
-      <p class="mt-3 text-4xl font-black tracking-[-0.03em] text-ca-ink">{{ subscribed_users }}</p>
+    <article class="pf-panel p-5">
+      <p class="text-sm font-black text-[color:var(--pf-muted)]">Subscribed users</p>
+      <p class="mt-3 text-4xl font-black text-[color:var(--pf-ink)]">{{ subscribed_users }}</p>
       {% if total_users > 0 %}
-      <p class="mt-3 text-xs font-bold text-ca-muted">{{ subscribed_users|floatformat:0 }}/{{ total_users }} users ({% widthratio subscribed_users total_users 100 %}%)</p>
+      <p class="mt-3 text-xs font-bold text-[color:var(--pf-muted)]">{{ subscribed_users|floatformat:0 }}/{{ total_users }} users ({% widthratio subscribed_users total_users 100 %}%)</p>
       {% endif %}
     </article>
 
-    <article class="ca-panel p-5">
-      <p class="text-sm font-black text-ca-muted">Sitemaps</p>
-      <p class="mt-3 text-4xl font-black tracking-[-0.03em] text-ca-ink">{{ total_sitemaps }}</p>
-      <p class="mt-3 text-xs font-bold text-ca-muted"><span class="text-ca-ink">{{ total_pages }}</span> pages tracked</p>
+    <article class="pf-panel p-5">
+      <p class="text-sm font-black text-[color:var(--pf-muted)]">Sitemaps</p>
+      <p class="mt-3 text-4xl font-black text-[color:var(--pf-ink)]">{{ total_sitemaps }}</p>
+      <p class="mt-3 text-xs font-bold text-[color:var(--pf-muted)]"><span class="text-[color:var(--pf-ink)]">{{ total_pages }}</span> pages tracked</p>
     </article>
 
-    <article class="ca-panel p-5">
-      <p class="text-sm font-black text-ca-muted">Page status</p>
-      <p class="mt-3 text-4xl font-black tracking-[-0.03em] text-ca-ink">{{ pages_reviewed }}</p>
-      <p class="mt-3 text-xs font-bold text-ca-muted">Reviewed: <span class="text-[var(--ca-success)]">{{ pages_reviewed }}</span> / Pending: <span class="text-[var(--ca-danger)]">{{ pages_unreviewed }}</span></p>
+    <article class="pf-panel p-5">
+      <p class="text-sm font-black text-[color:var(--pf-muted)]">Page status</p>
+      <p class="mt-3 text-4xl font-black text-[color:var(--pf-ink)]">{{ pages_reviewed }}</p>
+      <p class="mt-3 text-xs font-bold text-[color:var(--pf-muted)]">Reviewed: <span class="text-[var(--pf-brand-dark)]">{{ pages_reviewed }}</span> / Pending: <span class="text-[var(--pf-danger)]">{{ pages_unreviewed }}</span></p>
     </article>
   </div>
 
   <div class="mt-8 grid gap-5 xl:grid-cols-2">
-    <section class="ca-panel overflow-hidden">
-      <div class="border-b border-[var(--ca-line)] px-5 py-4">
-        <h2 class="text-lg font-black text-ca-ink">Recent users</h2>
+    <section class="pf-panel overflow-hidden">
+      <div class="border-b border-[var(--pf-line)] px-5 py-4">
+        <h2 class="text-lg font-black text-[color:var(--pf-ink)]">Recent users</h2>
       </div>
       <div class="overflow-x-auto">
-        <table class="ca-table">
+        <table class="pf-table">
           <thead>
             <tr>
               <th>Email</th>
@@ -90,13 +90,13 @@
           <tbody>
             {% for user in recent_users %}
             <tr>
-              <td class="whitespace-nowrap text-sm font-semibold text-ca-ink">{{ user.email }}</td>
-              <td class="whitespace-nowrap text-sm font-semibold text-ca-muted">{{ user.username }}</td>
-              <td class="whitespace-nowrap text-sm font-semibold text-ca-muted">{{ user.date_joined|date:"M d, Y" }}</td>
+              <td class="whitespace-nowrap text-sm font-semibold text-[color:var(--pf-ink)]">{{ user.email }}</td>
+              <td class="whitespace-nowrap text-sm font-semibold text-[color:var(--pf-muted)]">{{ user.username }}</td>
+              <td class="whitespace-nowrap text-sm font-semibold text-[color:var(--pf-muted)]">{{ user.date_joined|date:"M d, Y" }}</td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="3" class="text-center text-sm font-semibold text-ca-muted">No users yet</td>
+              <td colspan="3" class="text-center text-sm font-semibold text-[color:var(--pf-muted)]">No users yet</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -104,12 +104,12 @@
       </div>
     </section>
 
-    <section class="ca-panel overflow-hidden">
-      <div class="border-b border-[var(--ca-line)] px-5 py-4">
-        <h2 class="text-lg font-black text-ca-ink">Top users by pages</h2>
+    <section class="pf-panel overflow-hidden">
+      <div class="border-b border-[var(--pf-line)] px-5 py-4">
+        <h2 class="text-lg font-black text-[color:var(--pf-ink)]">Top users by pages</h2>
       </div>
       <div class="overflow-x-auto">
-        <table class="ca-table">
+        <table class="pf-table">
           <thead>
             <tr>
               <th>Email</th>
@@ -119,12 +119,12 @@
           <tbody>
             {% for profile in top_users_by_pages %}
             <tr>
-              <td class="whitespace-nowrap text-sm font-semibold text-ca-ink">{{ profile.user.email }}</td>
-              <td class="text-right text-sm font-black text-ca-ink">{{ profile.page_count }}</td>
+              <td class="whitespace-nowrap text-sm font-semibold text-[color:var(--pf-ink)]">{{ profile.user.email }}</td>
+              <td class="text-right text-sm font-black text-[color:var(--pf-ink)]">{{ profile.page_count }}</td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="2" class="text-center text-sm font-semibold text-ca-muted">No data yet</td>
+              <td colspan="2" class="text-center text-sm font-semibold text-[color:var(--pf-muted)]">No data yet</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -134,46 +134,46 @@
   </div>
 
   <div class="mt-8 grid gap-5 xl:grid-cols-2">
-    <section class="ca-panel p-5">
-      <h2 class="text-lg font-black text-ca-ink">Recent sitemaps</h2>
+    <section class="pf-panel p-5">
+      <h2 class="text-lg font-black text-[color:var(--pf-ink)]">Recent sitemaps</h2>
       <ul class="mt-5 space-y-4">
         {% for sitemap in recent_sitemaps %}
-        <li class="border-b border-[var(--ca-line)] pb-4 last:border-0 last:pb-0">
-          <p class="break-all text-sm font-black text-ca-ink">{{ sitemap.sitemap_url }}</p>
-          <p class="mt-1 text-xs font-bold text-ca-muted">{{ sitemap.profile.user.email }} / {{ sitemap.created_at|date:"M d, Y" }}</p>
+        <li class="border-b border-[var(--pf-line)] pb-4 last:border-0 last:pb-0">
+          <p class="break-all text-sm font-black text-[color:var(--pf-ink)]">{{ sitemap.sitemap_url }}</p>
+          <p class="mt-1 text-xs font-bold text-[color:var(--pf-muted)]">{{ sitemap.profile.user.email }} / {{ sitemap.created_at|date:"M d, Y" }}</p>
         </li>
         {% empty %}
-        <li class="text-sm font-semibold text-ca-muted">No sitemaps yet</li>
+        <li class="text-sm font-semibold text-[color:var(--pf-muted)]">No sitemaps yet</li>
         {% endfor %}
       </ul>
     </section>
 
-    <section class="ca-panel p-5">
-      <h2 class="text-lg font-black text-ca-ink">Recent feedback</h2>
+    <section class="pf-panel p-5">
+      <h2 class="text-lg font-black text-[color:var(--pf-ink)]">Recent feedback</h2>
       <ul class="mt-5 space-y-4">
         {% for feedback_item in recent_feedback %}
-        <li class="border-b border-[var(--ca-line)] pb-4 last:border-0 last:pb-0">
-          <p class="text-sm font-semibold leading-6 text-ca-ink">{{ feedback_item.feedback|truncatewords:20 }}</p>
-          <p class="mt-1 text-xs font-bold text-ca-muted">
+        <li class="border-b border-[var(--pf-line)] pb-4 last:border-0 last:pb-0">
+          <p class="text-sm font-semibold leading-6 text-[color:var(--pf-ink)]">{{ feedback_item.feedback|truncatewords:20 }}</p>
+          <p class="mt-1 text-xs font-bold text-[color:var(--pf-muted)]">
             {% if feedback_item.profile %}{{ feedback_item.profile.user.email }}{% else %}Anonymous{% endif %} / {{ feedback_item.created_at|date:"M d, Y" }} / {{ feedback_item.page }}
           </p>
         </li>
         {% empty %}
-        <li class="text-sm font-semibold text-ca-muted">No feedback yet</li>
+        <li class="text-sm font-semibold text-[color:var(--pf-muted)]">No feedback yet</li>
         {% endfor %}
       </ul>
     </section>
   </div>
 
-  <section class="ca-panel-muted mt-8 p-5">
+  <section class="pf-panel-muted mt-8 p-5">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h2 class="text-lg font-black text-ca-ink">Quick stats</h2>
-        <p class="ca-copy mt-1 text-sm">Feedback submissions and profile records.</p>
+        <h2 class="text-lg font-black text-[color:var(--pf-ink)]">Quick stats</h2>
+        <p class="text-base leading-7 text-[color:var(--pf-muted)] mt-1 text-sm">Feedback submissions and profile records.</p>
       </div>
-      <div class="flex gap-3 text-sm font-black text-ca-ink">
-        <span class="ca-status ca-status-muted">Feedback: {{ total_feedback }}</span>
-        <span class="ca-status ca-status-muted">Profiles: {{ total_profiles }}</span>
+      <div class="flex gap-3 text-sm font-black text-[color:var(--pf-ink)]">
+        <span class="pf-badge">Feedback: {{ total_feedback }}</span>
+        <span class="pf-badge">Profiles: {{ total_profiles }}</span>
       </div>
     </div>
   </section>

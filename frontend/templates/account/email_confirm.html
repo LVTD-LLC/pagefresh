@@ -2,37 +2,37 @@
 {% load account %}
 
 {% block meta %}
-  <title>Cleanapp - Confirm Email</title>
+  <title>Confirm email - PageFresh</title>
 {% endblock meta %}
 
 {% block content %}
-<section class="ca-wrap grid min-h-[calc(100vh-7rem)] items-center py-12">
-  <div class="ca-panel mx-auto w-full max-w-2xl p-6 text-center sm:p-8">
-    <h1 class="text-3xl font-black tracking-[-0.03em] text-ca-ink">Confirm email address</h1>
+  <section class="pf-shell flex min-h-[calc(100dvh-4rem)] items-center justify-center py-12">
+    <div class="pf-panel w-full max-w-lg p-6 text-center sm:p-8">
+      <h1 class="text-3xl font-semibold text-[color:var(--pf-ink)]">Confirm email address</h1>
 
-    {% if confirmation %}
-      {% user_display confirmation.email_address.user as user_display %}
-      {% if can_confirm %}
-        <p class="ca-copy mx-auto mt-4 max-w-xl">
-          Confirm <a href="mailto:{{ confirmation.email_address.email }}" class="font-black text-[var(--ca-primary)] hover:text-[var(--ca-primary-strong)]">{{ confirmation.email_address.email }}</a> for {{ user_display }}.
-        </p>
-        {% url 'account_confirm_email' confirmation.key as action_url %}
-        <form method="post" action="{{ action_url }}" class="mt-6 flex justify-center">
-          {% csrf_token %}
-          {{ redirect_field }}
-          <button type="submit" class="ca-btn ca-btn-primary">Confirm email</button>
-        </form>
+      {% if confirmation %}
+        {% user_display confirmation.email_address.user as user_display %}
+        {% if can_confirm %}
+          <p class="mt-4 text-sm leading-6 text-[color:var(--pf-muted)]">
+            Confirm that <a href="mailto:{{ confirmation.email_address.email }}" class="pf-link">{{ confirmation.email_address.email }}</a> belongs to {{ user_display }}.
+          </p>
+          {% url 'account_confirm_email' confirmation.key as action_url %}
+          <form method="post" action="{{ action_url }}" class="mt-8">
+            {% csrf_token %}
+            {{ redirect_field }}
+            <button type="submit" class="pf-button-primary">Confirm email</button>
+          </form>
+        {% else %}
+          <p class="mt-4 text-sm leading-6 text-red-700">
+            This address is already confirmed by a different account.
+          </p>
+        {% endif %}
       {% else %}
-        <p class="mt-4 text-sm font-semibold leading-6 text-[var(--ca-danger)]">
-          Unable to confirm {{ confirmation.email_address.email }} because it is already confirmed by a different account.
+        {% url 'account_email' as email_url %}
+        <p class="mt-4 text-sm leading-6 text-[color:var(--pf-muted)]">
+          This confirmation link expired or is invalid. Please <a href="{{ email_url }}" class="pf-link">request a new confirmation email</a>.
         </p>
       {% endif %}
-    {% else %}
-      {% url 'account_email' as email_url %}
-      <p class="ca-copy mx-auto mt-4 max-w-xl">
-        This confirmation link expired or is invalid. Please <a href="{{ email_url }}" class="font-black text-[var(--ca-primary)] hover:text-[var(--ca-primary-strong)]">request a new confirmation link</a>.
-      </p>
-    {% endif %}
-  </div>
-</section>
+    </div>
+  </section>
 {% endblock content %}

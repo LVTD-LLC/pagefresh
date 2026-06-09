@@ -1,29 +1,33 @@
 # Product
 
+## Register
+
+product
+
 ## Users
 
-Cleanapp is for founders, indie hackers, content operators, and small teams who own many public web pages and need a repeatable way to keep them reviewed. They use it during short maintenance sessions, often between other work, and need to know which URLs need attention without rebuilding a content calendar by hand.
+PageFresh is for website owners, solo operators, and small agencies responsible for keeping client or owned websites current. They use it during recurring maintenance work: adding sitemaps, reviewing queued pages, updating stale content, and marking pages complete.
 
 ## Product Purpose
 
-Cleanapp tracks pages from a sitemap, sends review reminders, and helps users keep public websites current. Success means a user can add a sitemap, receive a useful review queue, update stale pages, and mark work complete with minimal ceremony.
+PageFresh imports sitemap pages, tracks which URLs need review, and sends scheduled email digests so content maintenance becomes a repeatable workflow. Success means users can see every active site, know what needs attention, and keep pages fresh without building a manual spreadsheet or reminder system.
 
 ## Brand Personality
 
-Sharp, playful, and opinionated. The product should feel like a precise indie SaaS tool with enough personality to be memorable, but not so much that the app UI gets in the way of reviewing pages.
+Calm, crisp, and practical. The product should feel like a quiet maintenance system that earns trust through clarity, not hype.
 
 ## Anti-references
 
-Avoid generic blue SaaS, stock card grids, vague productivity copy, decorative gradients, and bland template dashboards. Avoid heavy dark-mode product screens unless the surface clearly benefits from it. Do not make the logged-in app feel like a marketing page.
+Avoid generic SaaS landing pages, identical icon-card grids, vague productivity copy, noisy dashboards, decorative motion, and blue-template styling that makes the product feel interchangeable.
 
 ## Design Principles
 
-- Make maintenance feel active, not like administration.
-- Show the review loop quickly: add a sitemap, get pages, review, mark done.
-- Use distinctive brand moments on marketing surfaces and restrained clarity inside the app.
-- Keep actions literal and close to the data they affect.
-- Let playful details sharpen the product, never obscure the workflow.
+1. Show the maintenance loop clearly: import pages, queue reviews, send reminders, mark work done.
+2. Keep product UI task-first: labels, empty states, and actions should help users make progress quickly.
+3. Treat agencies as first-class users with client grouping, site limits, and digest summaries that scan well.
+4. Use brand polish to create confidence, but avoid visual choices that slow routine review work.
+5. Preserve accessibility and readability over novelty.
 
 ## Accessibility & Inclusion
 
-Target WCAG AA contrast for all text and controls. Motion should respect reduced-motion preferences. Product surfaces must keep focus states visible, controls familiar, and dense tables readable on smaller screens.
+Target WCAG AA contrast for text and controls. Support keyboard navigation, visible focus states, reduced motion preferences, and clear form labels with helper or error text where needed.

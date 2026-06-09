@@ -279,10 +279,12 @@ if GITHUB_CLIENT_ID != "":
 MAILGUN_API_KEY = env("MAILGUN_API_KEY", default="")
 ANYMAIL = {
     "MAILGUN_API_KEY": MAILGUN_API_KEY,
-    "MAILGUN_SENDER_DOMAIN": "mg.cleanapp.dev",
+    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default="mg.pagefresh.lvtd.dev"),
 }
-DEFAULT_FROM_EMAIL = "Rasul from Cleanapp <rasul@cleanapp.dev>"
-SERVER_EMAIL = "Cleanapp Errors <error@cleanapp.dev>"
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="Rasul from PageFresh <rasul@pagefresh.lvtd.dev>"
+)
+SERVER_EMAIL = env("SERVER_EMAIL", default="PageFresh Errors <error@pagefresh.lvtd.dev>")
 
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -489,7 +491,7 @@ STRIPE_WEBHOOK_UUID = env("WEBHOOK_UUID", default="")
 STRIPE_PRICE_ID_MONTHLY = env("STRIPE_PRICE_ID_MONTHLY", default="")
 STRIPE_PRICE_ID_YEARLY = env("STRIPE_PRICE_ID_YEARLY", default="")
 
-# Cleanapp billing plans (agency ICP defaults).
+# PageFresh billing plans (agency ICP defaults).
 STRIPE_PRICE_ID_STARTER = env("STRIPE_PRICE_ID_STARTER", default=STRIPE_PRICE_ID_MONTHLY)
 STRIPE_PRICE_ID_AGENCY = env("STRIPE_PRICE_ID_AGENCY", default=STRIPE_PRICE_ID_YEARLY)
 
@@ -498,9 +500,7 @@ CLEANAPP_STARTER_SITE_LIMIT = env.int("CLEANAPP_STARTER_SITE_LIMIT", default=5)
 CLEANAPP_AGENCY_SITE_LIMIT = env.int("CLEANAPP_AGENCY_SITE_LIMIT", default=30)
 
 STRIPE_TRIAL_DAYS_DEFAULT = env.int("STRIPE_TRIAL_DAYS_DEFAULT", default=14)
-STRIPE_TRIAL_DAYS_STARTER = env.int(
-    "STRIPE_TRIAL_DAYS_STARTER", default=STRIPE_TRIAL_DAYS_DEFAULT
-)
+STRIPE_TRIAL_DAYS_STARTER = env.int("STRIPE_TRIAL_DAYS_STARTER", default=STRIPE_TRIAL_DAYS_DEFAULT)
 STRIPE_TRIAL_DAYS_AGENCY = env.int("STRIPE_TRIAL_DAYS_AGENCY", default=STRIPE_TRIAL_DAYS_DEFAULT)
 
 CLEANAPP_BILLING_PLANS = {

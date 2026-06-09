@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+from allauth.account.models import EmailAddress
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -190,7 +191,88 @@ class TestCheckoutSession:
 
 
 @pytest.mark.django_db
+class TestPricingView:
+    def test_pricing_uses_configured_plan_limits(
+        self, auth_client, configured_billing_plans, settings
+    ):
+        settings.CLEANAPP_BILLING_PLANS["starter"]["site_limit"] = 7
+        settings.CLEANAPP_BILLING_PLANS["agency"]["site_limit"] = 42
+
+        response = auth_client.get(reverse("pricing"))
+
+        assert response.status_code == 200
+        assert response.context["starter_site_limit"] == 7
+        assert response.context["agency_site_limit"] == 42
+        assert b">7<" in response.content
+        assert b">42<" in response.content
+
+    def test_starter_subscriber_can_upgrade_to_agency(
+        self, auth_client, user, profile, configured_billing_plans
+    ):
+        profile.state = ProfileStates.SUBSCRIBED
+        profile.stripe_plan_key = "starter"
+        profile.save(update_fields=["state", "stripe_plan_key"])
+
+        response = auth_client.get(reverse("pricing"))
+
+        assert response.status_code == 200
+        assert response.content.count(b"Current plan is active") == 1
+        agency_checkout_url = reverse(
+            "user_upgrade_checkout_session",
+            kwargs={"pk": user.id, "plan": "agency"},
+        ).encode()
+        assert agency_checkout_url in response.content
+        assert b"Choose Agency" in response.content
+
+    def test_agency_subscriber_only_sees_agency_as_current(
+        self, auth_client, profile, configured_billing_plans
+    ):
+        profile.state = ProfileStates.SUBSCRIBED
+        profile.stripe_plan_key = "agency"
+        profile.save(update_fields=["state", "stripe_plan_key"])
+
+        response = auth_client.get(reverse("pricing"))
+
+        assert response.status_code == 200
+        assert response.content.count(b"Current plan is active") == 1
+        assert b"Included in Agency" in response.content
+
+    def test_churned_user_with_stale_plan_can_resubscribe(
+        self, auth_client, user, profile, configured_billing_plans
+    ):
+        profile.state = ProfileStates.CHURNED
+        profile.stripe_plan_key = "starter"
+        profile.save(update_fields=["state", "stripe_plan_key"])
+
+        response = auth_client.get(reverse("pricing"))
+
+        starter_checkout_url = reverse(
+            "user_upgrade_checkout_session",
+            kwargs={"pk": user.id, "plan": "starter"},
+        ).encode()
+        agency_checkout_url = reverse(
+            "user_upgrade_checkout_session",
+            kwargs={"pk": user.id, "plan": "agency"},
+        ).encode()
+        assert response.status_code == 200
+        assert b"Current plan is active" not in response.content
+        assert starter_checkout_url in response.content
+        assert agency_checkout_url in response.content
+
+
+@pytest.mark.django_db
 class TestUserSettingsView:
+    def test_settings_form_preserves_django_field_names(self, auth_client, user):
+        EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=True)
+
+        response = auth_client.get(reverse("settings"))
+
+        assert response.status_code == 200
+        assert b'name="first_name"' in response.content
+        assert b'name="last_name"' in response.content
+        assert b'name="first-name"' not in response.content
+        assert b'name="last-name"' not in response.content
+
     def test_settings_updates_first_and_last_name(self, auth_client, user):
         response = auth_client.post(
             reverse("settings"),

@@ -26,7 +26,7 @@ def add_email_to_buttondown(email, tag):
         "email_address": str(email),
         "metadata": {"source": tag},
         "tags": [tag],
-        "referrer_url": "https://cleanapp.com",
+        "referrer_url": "https://pagefresh.lvtd.dev",
         "type": "regular",
     }
 
@@ -288,7 +288,7 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # n
 def fetch_page_metadata(url: str) -> dict:
     try:
         response = requests.get(
-            url, timeout=10, headers={"User-Agent": "Mozilla/5.0 (compatible; CleanappBot/1.0)"}
+            url, timeout=10, headers={"User-Agent": "Mozilla/5.0 (compatible; PageFreshBot/1.0)"}
         )
         response.raise_for_status()
 
@@ -405,7 +405,7 @@ def fetch_page_metadata(url: str) -> dict:
         return {}
 
 
-def send_page_email_to_profile(profile_id: int) -> str:
+def send_page_email_to_profile(profile_id: int) -> str:  # noqa: C901
     from django.core.mail import EmailMultiAlternatives
     from django.template.loader import render_to_string
     from django.urls import reverse

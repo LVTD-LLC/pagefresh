@@ -2,82 +2,70 @@
 {% load widget_tweaks %}
 {% load socialaccount %}
 
-{% block content %}
-<section class="ca-wrap grid min-h-[calc(100vh-10rem)] items-center py-12">
-  <div class="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-    <div class="hidden lg:block">
-      <span class="ca-kicker">Start the loop</span>
-      <h1 class="ca-heading-balance mt-6 text-5xl font-black tracking-[-0.03em] text-ca-ink">
-        Put your sitemap on a schedule.
-      </h1>
-      <p class="ca-copy mt-5 text-lg">
-        Create an account, add one sitemap, and Cleanapp will start turning your public pages into a review queue.
-      </p>
-    </div>
+{% block meta %}
+  <title>Create account - PageFresh</title>
+{% endblock meta %}
 
-    <div class="ca-auth-card p-6 sm:p-8">
+{% block content %}
+  <section class="pf-shell flex min-h-[calc(100dvh-4rem)] items-center justify-center py-12">
+    <div class="pf-panel w-full max-w-md p-6 sm:p-8">
       <div>
-        <h2 class="text-3xl font-black tracking-[-0.03em] text-ca-ink">Create account</h2>
-        <p class="mt-2 text-sm font-semibold text-ca-muted">
-          Already have one?
-          <a href="{% url 'account_login' %}" class="font-black text-[var(--ca-primary)] hover:text-[var(--ca-primary-strong)]">
-            Sign in.
-          </a>
+        <h1 class="text-3xl font-semibold text-[color:var(--pf-ink)]">Create your account</h1>
+        <p class="mt-3 text-sm leading-6 text-[color:var(--pf-muted)]">
+          Already using PageFresh?
+          <a href="{% url 'account_login' %}" class="pf-link">Sign in</a>.
         </p>
       </div>
 
-      <form class="mt-8 space-y-5" id="signup_form" method="post" action="{% url 'account_signup' %}">
+      <form class="mt-8 grid gap-5" id="signup_form" method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
         {{ form.non_field_errors | safe }}
         <input type="hidden" name="remember" value="true" />
 
         <div>
           {{ form.username.errors | safe }}
-          <label for="username" class="ca-label">Username</label>
-          {% render_field form.username placeholder="rasul" id="username" name="username" type="text" autocomplete="username" required=True class="ca-field mt-2" %}
+          <label for="username" class="pf-label">Username</label>
+          {% render_field form.username id="username" name="username" type="text" autocomplete="username" required=True class="pf-input mt-1" %}
         </div>
 
         <div>
           {{ form.email.errors | safe }}
-          <label for="email" class="ca-label">Email</label>
-          {% render_field form.email id="email" name="email" placeholder="you@example.com" type="email" autocomplete="email" required="True" class="ca-field mt-2" %}
+          <label for="email" class="pf-label">Email</label>
+          {% render_field form.email id="email" name="email" type="email" autocomplete="email" required=True class="pf-input mt-1" %}
         </div>
 
         <div>
           {{ form.password1.errors | safe }}
-          <label for="password1" class="ca-label">Password</label>
-          {% render_field form.password1 id="password1" name="password1" placeholder="Password" type="password" autocomplete="new-password" required="True" class="ca-field mt-2" %}
+          <label for="password1" class="pf-label">Password</label>
+          {% render_field form.password1 id="password1" name="password1" type="password" autocomplete="new-password" required=True class="pf-input mt-1" %}
         </div>
 
         <div>
           {{ form.password2.errors | safe }}
-          <label for="password2" class="ca-label">Confirm password</label>
-          {% render_field form.password2 id="password2" name="password2" type="password" autocomplete="new-password" required="True" class="ca-field mt-2" placeholder="Confirm password" %}
+          <label for="password2" class="pf-label">Confirm password</label>
+          {% render_field form.password2 id="password2" name="password2" type="password" autocomplete="new-password" required=True class="pf-input mt-1" %}
         </div>
 
         {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
 
-        <button type="submit" class="ca-btn ca-btn-primary w-full">Create account</button>
+        <button type="submit" class="pf-button-primary w-full">Create account</button>
       </form>
 
       {% if has_social_providers %}
       <div class="mt-8">
-        <div class="flex items-center gap-4 text-sm font-bold text-ca-muted">
-          <span class="h-px flex-1 bg-[var(--ca-line)]"></span>
-          <span>Or continue with</span>
-          <span class="h-px flex-1 bg-[var(--ca-line)]"></span>
+        <div class="flex items-center gap-4">
+          <div class="h-px flex-1 bg-[color:var(--pf-line)]"></div>
+          <span class="text-sm font-medium text-[color:var(--pf-muted)]">Or continue with</span>
+          <div class="h-px flex-1 bg-[color:var(--pf-line)]"></div>
         </div>
 
-        <div class="mt-5 grid grid-cols-1 gap-3">
+        <div class="mt-5 grid gap-3">
           {% if 'github' in available_social_providers %}
           <form method="post" action="{% provider_login_url 'github' %}">
             {% csrf_token %}
-            <button class="ca-btn ca-btn-secondary w-full">
-              <svg class="h-5 w-5 fill-[#24292F]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd" />
-              </svg>
+            <button class="pf-button-secondary w-full">
               GitHub
             </button>
           </form>
@@ -86,6 +74,5 @@
       </div>
       {% endif %}
     </div>
-  </div>
-</section>
+  </section>
 {% endblock content %}
