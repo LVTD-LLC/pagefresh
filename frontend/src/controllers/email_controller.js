@@ -112,9 +112,9 @@ export default class extends Controller {
     const emailItem = document.createElement("div");
     emailItem.setAttribute("data-email-item", "");
     emailItem.className =
-      "flex flex-col gap-3 rounded-xl border border-[var(--pf-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between";
+      "flex flex-col gap-3 rounded-2xl border border-[color:var(--pf-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between";
 
-    const emailContent = document.createElement("div");
+    const emailContent = document.createElement("label");
     emailContent.className = "flex flex-1 items-start gap-3";
 
     const checkbox = document.createElement("input");
@@ -122,24 +122,19 @@ export default class extends Controller {
     checkbox.checked = enabled;
     checkbox.dataset.emailId = String(emailId);
     checkbox.dataset.action = "change->email#toggleEmail";
-    checkbox.className =
-      "mt-1 h-4 w-4 rounded border-[var(--pf-line)] text-[var(--pf-brand-dark)] focus:ring-[var(--pf-brand-dark)]";
+    checkbox.className = "mt-1 h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600";
 
-    const textContent = document.createElement("div");
-    textContent.className = "min-w-0 flex-1";
+    const textContent = document.createElement("span");
+    textContent.className = "min-w-0";
 
-    const emailText = document.createElement("p");
-    emailText.className = "break-all text-sm font-black text-[color:var(--pf-ink)]";
+    const emailText = document.createElement("span");
+    emailText.className = "block break-all text-sm font-semibold text-[color:var(--pf-ink)]";
     emailText.textContent = emailAddress;
 
-    const statusText = document.createElement("p");
-    statusText.className = "mt-1 text-xs font-bold";
+    const statusText = document.createElement("span");
+    statusText.className = "block text-xs text-[color:var(--pf-muted)]";
+    statusText.textContent = enabled ? "Notifications enabled" : "Notifications disabled";
 
-    const status = document.createElement("span");
-    status.className = enabled ? "text-[var(--pf-brand-dark)]" : "text-[color:var(--pf-muted)]";
-    status.textContent = enabled ? "Notifications enabled" : "Notifications disabled";
-
-    statusText.appendChild(status);
     textContent.append(emailText, statusText);
     emailContent.append(checkbox, textContent);
 
@@ -147,8 +142,7 @@ export default class extends Controller {
     removeButton.type = "button";
     removeButton.dataset.emailId = String(emailId);
     removeButton.dataset.action = "click->email#deleteEmail";
-    removeButton.className =
-      "inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200";
+    removeButton.className = "self-start text-sm font-semibold text-red-700 hover:text-red-900 sm:self-center";
     removeButton.textContent = "Remove";
 
     emailItem.append(emailContent, removeButton);
