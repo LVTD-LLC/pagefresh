@@ -8,7 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <link rel="icon" type="image/png" sizes="16x16 32x32 500x500" href="{% static 'vendors/images/logo.png' %}" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'vendors/images/logo.svg' %}" />
+  <link rel="icon" type="image/png" sizes="16x16 32x32 512x512" href="{% static 'vendors/images/logo.png' %}" />
   <link rel="apple-touch-icon" href="{% static 'vendors/images/logo.png' %}" />
 
   {% block meta %}
@@ -64,7 +65,9 @@
       <div class="pf-shell">
         <div class="flex h-16 items-center justify-between gap-4">
           <a href="{% url 'landing_page' %}" class="pf-wordmark" aria-label="PageFresh home">
-            <span class="pf-mark">PF</span>
+            <span class="pf-mark" aria-hidden="true">
+              <img src="{% static 'vendors/images/logo.svg' %}" alt="" class="h-full w-full" />
+            </span>
             <span class="text-lg">PageFresh</span>
           </a>
 
@@ -120,7 +123,9 @@
     <footer class="border-t border-[color:var(--pf-line)] bg-white">
       <div class="pf-shell flex flex-col gap-4 py-8 text-sm text-[color:var(--pf-muted)] md:flex-row md:items-center md:justify-between">
         <a href="{% url 'landing_page' %}" class="pf-wordmark">
-          <span class="pf-mark h-8 w-8 rounded-lg text-xs">PF</span>
+          <span class="pf-mark h-8 w-8 rounded-lg" aria-hidden="true">
+            <img src="{% static 'vendors/images/logo.svg' %}" alt="" class="h-full w-full" />
+          </span>
           <span>PageFresh</span>
         </a>
         <p>&copy; 2026 <a class="pf-link" href="https://lvtd.dev?ref={{ request.get_host }}">LVTD, LLC</a>. All rights reserved.</p>
