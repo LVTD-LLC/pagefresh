@@ -45,6 +45,8 @@ The package name is legacy. Do not rename `cleanapp` without a coordinated migra
 - `tests/`: pytest coverage for queueing, billing, webhooks, views, signals, and digest behavior.
 - `migrations/`: generated Django migrations only.
 
+Future agent/API work should keep shared behavior in `core` rather than baking business rules into a single transport. If the same operation is needed from UI, API, MCP, and background tasks, extract a small service/module in `core/` and have each surface call it.
+
 ## Frontend
 
 - `frontend/templates/base_app.html`: authenticated app shell, metadata, analytics scripts, navigation, messages, feedback widget, and asset includes.
@@ -93,6 +95,8 @@ The package name is legacy. Do not rename `cleanapp` without a coordinated migra
 - New sitemap/page queue behavior: `core/review_queue.py`, `core/tasks.py`, and `core/tests/test_review_queue.py`.
 - New billing behavior: `core/billing.py`, `core/stripe_webhooks.py`, settings plan config, pricing/settings templates, and billing/webhook tests.
 - New API behavior: schema in `core/api/schemas.py`, endpoint in `core/api/views.py`, auth in `core/api/auth.py` if needed, and tests.
+- Future public API behavior: prefer shared service modules under `core/` for sitemap/page/review operations, then expose them through `core/api/`.
+- Future MCP behavior: add a dedicated MCP entrypoint/package only after shared services exist. MCP tools should call the same core operations as the public API.
 - New frontend interactivity: Stimulus controller under `frontend/src/controllers/`, data attributes in templates, and no inline behavior unless unavoidable.
 - New global styles: extend `frontend/src/styles/index.css` and update `DESIGN.md` when tokens/components change.
 

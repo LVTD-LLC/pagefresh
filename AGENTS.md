@@ -79,9 +79,12 @@ Do not run host `pytest` directly for normal validation. The project rules expec
 ## Product Guardrails
 
 - The core loop is sitemap import -> due page queue -> email digest -> review redirect -> reviewed state.
-- Do not turn PageFresh into a CMS, SEO crawler, AI content generator, project management tool, or noisy analytics dashboard.
+- The long-term direction is AI-agent-first. Treat email as a current human workflow, not the only interface.
+- Future API and MCP surfaces should expose the same product primitives as the UI: sites/sitemaps, pages, due queues, page selection, review state, notes, and limits.
+- Do not make agents scrape UI pages or parse email digests. Add shared domain behavior and expose it through explicit API/MCP contracts.
+- Do not turn PageFresh into a CMS, broad SEO crawler, generic AI content generator, project management tool, or noisy analytics dashboard.
 - Agencies matter. Preserve client labels, grouped digests, multi-site scanning, and clear plan usage.
-- Email is the primary workflow surface. Dashboard features should support digest setup and follow-through.
+- Email remains useful for humans. Dashboard, API, and MCP features should all support the same recurring review loop.
 - Keep setup practical for small self-hosted/Render deployments.
 
 ## Security And Privacy
