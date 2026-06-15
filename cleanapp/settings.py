@@ -282,8 +282,9 @@ ANYMAIL = {
     "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default="mg.pagefresh.lvtd.dev"),
 }
 DEFAULT_FROM_EMAIL = env(
-    "DEFAULT_FROM_EMAIL", default="Rasul from PageFresh <rasul@pagefresh.lvtd.dev>"
+    "DEFAULT_FROM_EMAIL", default="Rasul from PageFresh <rasul@lvtd.dev>"
 )
+# User-facing email sender can differ from Django error notifications.
 SERVER_EMAIL = env("SERVER_EMAIL", default="PageFresh Errors <error@pagefresh.lvtd.dev>")
 
 if DEBUG:
