@@ -21,7 +21,7 @@ def get_default_from_email(env):
     return result.stdout.strip()
 
 
-def test_default_from_email_uses_pagefresh_lvtd_sender_when_env_is_unset():
+def test_default_from_email_uses_lvtd_sender_when_env_is_unset():
     env = os.environ.copy()
     env["DJANGO_SETTINGS_MODULE"] = "cleanapp.settings_test"
     env.pop("DEFAULT_FROM_EMAIL", None)

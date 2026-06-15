@@ -284,6 +284,7 @@ ANYMAIL = {
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL", default="Rasul from PageFresh <rasul@lvtd.dev>"
 )
+# User-facing email sender can differ from Django error notifications.
 SERVER_EMAIL = env("SERVER_EMAIL", default="PageFresh Errors <error@pagefresh.lvtd.dev>")
 
 if DEBUG:
