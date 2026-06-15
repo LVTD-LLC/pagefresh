@@ -17,5 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `Skip onboarding` option
 
+### Changed
+- Default PageFresh sender email now resolves from `DEFAULT_FROM_EMAIL` with a
+  `rasul@lvtd.dev` fallback.
+
 ### Removed
 - djstripe
