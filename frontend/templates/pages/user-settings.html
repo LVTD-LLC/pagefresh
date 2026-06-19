@@ -89,13 +89,13 @@
           <div data-email-target="list" class="mt-5 grid gap-3">
             {% for email_pref in email_preferences %}
             <div data-email-item class="flex flex-col gap-3 rounded-2xl border border-[color:var(--pf-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-              <label class="flex flex-1 items-start gap-3">
+              <label class="flex min-h-11 flex-1 items-start gap-3">
                 <input
                   type="checkbox"
                   {% if email_pref.enabled %}checked{% endif %}
                   data-email-id="{{ email_pref.id }}"
                   data-action="change->email#toggleEmail"
-                  class="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
+                  class="mt-1 h-5 w-5 rounded border-[color:var(--pf-line)] text-[color:var(--pf-brand-dark)] focus:ring-[color:var(--pf-brand)]"
                 />
                 <span>
                   <span class="block text-sm font-semibold text-[color:var(--pf-ink)]">{{ email_pref.email_address }}</span>
@@ -104,7 +104,7 @@
                   </span>
                 </span>
               </label>
-              <button type="button" data-email-id="{{ email_pref.id }}" data-action="click->email#deleteEmail" class="self-start text-sm font-semibold text-red-700 hover:text-red-900 sm:self-center">
+              <button type="button" data-email-id="{{ email_pref.id }}" data-action="click->email#deleteEmail" class="pf-danger-action self-start sm:self-center">
                 Remove
               </button>
             </div>
@@ -165,7 +165,7 @@
 
                 <div>
                   <label for="id_sitemap_{{ sitemap.id }}-is_active" class="pf-label">Archive status</label>
-                  <label class="mt-3 flex items-center gap-2 text-sm text-[color:var(--pf-muted)]">
+                  <label class="mt-3 flex min-h-11 items-center gap-2 text-sm text-[color:var(--pf-muted)]">
                     {{ form.is_active }}
                     <span>Active sitemap</span>
                   </label>

@@ -201,21 +201,10 @@
       </p>
     </div>
     <div class="flex flex-col gap-3 sm:flex-row md:justify-end">
-      <a href="{% url 'account_signup' %}" class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Start free</a>
-      <a href="{% url 'pricing' %}" class="inline-flex items-center justify-center rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">View pricing</a>
+      <a href="{% url 'account_signup' %}" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Start free</a>
+      <a href="{% url 'pricing' %}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">View pricing</a>
     </div>
   </div>
 </section>
-
-{% if show_confetti %}
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-<script>
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
-</script>
-{% endif %}
 
 {% endblock content %}

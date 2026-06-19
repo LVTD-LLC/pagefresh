@@ -1,12 +1,19 @@
 {% if messages %}
-<div class="fixed right-4 top-4 z-50 space-y-3" data-controller="reveal">
+<div class="fixed right-4 top-4 z-50 space-y-3" aria-live="polite" aria-atomic="false">
   {% for message in messages %}
-  <div data-reveal-target="item" data-message-id="{{ forloop.counter }}" class="pf-panel max-w-sm p-4 opacity-0 transition-all duration-300 ease-in-out translate-x-full {% if message.tags == 'error' %}border-[oklch(0.86_0.08_25)]{% else %}border-[oklch(0.84_0.09_145)]{% endif %}">
+  <div
+    data-controller="message"
+    data-message-id="{{ forloop.counter }}"
+    role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}"
+    aria-live="{% if message.tags == 'error' %}assertive{% else %}polite{% endif %}"
+    class="pf-panel max-w-sm p-4 opacity-0 transition-all duration-300 ease-out translate-x-full {% if message.tags == 'error' %}border-[oklch(0.86_0.08_25)]{% else %}border-[oklch(0.84_0.09_145)]{% endif %}"
+    data-action="mouseenter->message#pause mouseleave->message#resume focusin->message#pause focusout->message#resume"
+  >
     <div class="flex items-start">
       <div class="mr-3 flex-shrink-0">
-        <svg class="h-5 w-5" viewBox="0 0 24 24">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
           <circle class="text-[var(--pf-line)]" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12"/>
-          <circle class="{% if message.tags == 'error' %}text-[var(--pf-danger)]{% else %}text-[var(--pf-brand-dark)]{% endif %}" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12" data-timer-circle/>
+          <circle class="{% if message.tags == 'error' %}text-[var(--pf-danger)]{% else %}text-[var(--pf-brand-dark)]{% endif %}" stroke-width="2" stroke="currentColor" fill="transparent" r="10" cx="12" cy="12" data-message-target="timerCircle"/>
         </svg>
       </div>
       <div class="flex-grow">
@@ -15,7 +22,7 @@
         </p>
       </div>
       <div class="ml-3 flex-shrink-0">
-        <button data-action="click->reveal#hide" data-message-id="{{ forloop.counter }}" type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md text-[color:var(--pf-muted)] hover:text-[color:var(--pf-ink)]">
+        <button data-action="click->message#dismiss" type="button" class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-[color:var(--pf-muted)] hover:text-[color:var(--pf-ink)] focus:outline-none focus:ring-2 focus:ring-[color:var(--pf-brand)] focus:ring-offset-2">
           <span class="sr-only">Dismiss</span>
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -26,54 +33,4 @@
   </div>
   {% endfor %}
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const items = document.querySelectorAll('[data-reveal-target="item"]');
-    items.forEach((item, index) => {
-      setTimeout(() => {
-        item.classList.remove('opacity-0', 'translate-x-full');
-        startTimer(item);
-      }, index * 100);
-    });
-  });
-
-  function startTimer(item) {
-    const timerCircle = item.querySelector('[data-timer-circle]');
-    const radius = 10;
-    const circumference = 2 * Math.PI * radius;
-
-    timerCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-    timerCircle.style.strokeDashoffset = circumference;
-
-    let progress = 0;
-    const interval = setInterval(() => {
-      if (progress >= 100) {
-        clearInterval(interval);
-        hideMessage(item);
-      } else {
-        progress++;
-        const offset = circumference - (progress / 100) * circumference;
-        timerCircle.style.strokeDashoffset = offset;
-      }
-    }, 50);
-  }
-
-  function hideMessage(item) {
-    item.classList.add('opacity-0', 'translate-x-full');
-    setTimeout(() => {
-      item.remove();
-    }, 300);
-  }
-
-  document.addEventListener('click', (event) => {
-    if (event.target.closest('[data-action="click->reveal#hide"]')) {
-      const messageId = event.target.closest('[data-action="click->reveal#hide"]').getAttribute('data-message-id');
-      const item = document.querySelector(`[data-reveal-target="item"][data-message-id="${messageId}"]`);
-      if (item) {
-        hideMessage(item);
-      }
-    }
-  });
-</script>
 {% endif %}

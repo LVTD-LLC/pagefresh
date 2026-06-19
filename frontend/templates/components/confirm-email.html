@@ -1,15 +1,15 @@
 {% if not email_verified %}
-<div class="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4">
+<div class="pf-warning-banner mb-6">
   <div class="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
     <div>
-      <h2 class="text-sm font-semibold text-amber-950">Confirm your email</h2>
-      <p class="mt-1 text-sm leading-6 text-amber-900">
+      <h2 class="pf-warning-title text-sm font-semibold">Confirm your email</h2>
+      <p class="pf-warning-text mt-1 text-sm leading-6">
         Email confirmation is required before every PageFresh feature is available.
       </p>
     </div>
     <form method="post" action="{{ resend_confirmation_url }}">
       {% csrf_token %}
-      <button type="submit" class="rounded-xl border border-amber-400 bg-white px-4 py-2 text-sm font-semibold text-amber-950 transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2">
+      <button type="submit" class="pf-warning-action">
         Resend confirmation
       </button>
     </form>

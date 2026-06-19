@@ -87,17 +87,24 @@
             {% endif %}
           </div>
 
-          <div class="lg:hidden" data-controller="dropdown">
+          <div
+            class="lg:hidden"
+            data-controller="mobile-menu"
+            data-action="click@window->mobile-menu#closeOnOutside keydown@window->mobile-menu#closeOnEscape"
+          >
             <button
-              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--pf-line)] bg-white"
+              data-mobile-menu-target="button"
+              class="flex h-11 w-11 items-center justify-center rounded-xl border border-[color:var(--pf-line)] bg-white"
               aria-label="Toggle mobile menu"
-              data-action="dropdown#toggle click@window->dropdown#hide"
+              aria-controls="landing-mobile-menu"
+              aria-expanded="false"
+              data-action="click->mobile-menu#toggle"
             >
               <span class="sr-only">Menu</span>
               <span class="block h-4 w-5 border-y-2 border-[color:var(--pf-ink)]"></span>
             </button>
 
-            <div data-dropdown-target="menu" class="pf-panel absolute left-4 right-4 top-16 hidden p-2">
+            <div id="landing-mobile-menu" data-mobile-menu-target="menu" class="pf-panel absolute left-4 right-4 top-16 hidden p-2">
               <nav aria-label="Mobile navigation">
                 <ul class="grid gap-1">
                   <li><a href="{% url 'pricing' %}" class="block rounded-xl px-4 py-3 text-sm font-semibold text-[color:var(--pf-ink)] hover:bg-[color:var(--pf-panel-muted)]">Pricing</a></li>

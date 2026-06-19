@@ -24,27 +24,27 @@
 {% endblock meta %}
 
 {% block content %}
-<div class="container px-4 py-8 mx-auto md:relative">
+<div class="pf-shell py-12 md:py-16">
   <div class="mx-auto max-w-3xl">
-    <h1 class="mb-8 text-3xl font-bold text-center">PageFresh Blog</h1>
+    <h1 class="pf-page-title text-center">PageFresh Blog</h1>
     {% if blog_posts %}
-      <div class="space-y-4">
+      <div class="mt-8 space-y-4">
         {% for post in blog_posts %}
-          <a href="{{ post.get_absolute_url }}" class="block rounded-lg transition duration-150 ease-in-out hover:bg-gray-100">
+          <a href="{{ post.get_absolute_url }}" class="block rounded-2xl border border-transparent transition duration-150 ease-out hover:border-[color:var(--pf-line)] hover:bg-[color:var(--pf-panel-muted)] focus:outline-none focus:ring-2 focus:ring-[color:var(--pf-brand)] focus:ring-offset-2">
             <article class="flex items-start p-4">
               {% if post.icon %}
-                <img src="{{ post.icon.url }}" alt="{{ post.title }}" class="object-cover flex-shrink-0 mr-4 w-24 h-24 rounded-lg">
+                <img src="{{ post.icon.url }}" alt="{{ post.title }}" class="mr-4 h-24 w-24 flex-shrink-0 rounded-xl object-cover">
               {% endif %}
               <div>
-                <h2 class="mb-2 text-2xl font-semibold text-gray-900">{{ post.title }}</h2>
-                <p class="text-gray-600">{{ post.description }}</p>
+                <h2 class="mb-2 text-2xl font-semibold text-[color:var(--pf-ink)]">{{ post.title }}</h2>
+                <p class="text-[color:var(--pf-muted)]">{{ post.description }}</p>
               </div>
             </article>
           </a>
         {% endfor %}
       </div>
     {% else %}
-      <p class="text-center text-gray-600">No blog posts available at the moment.</p>
+      <p class="mt-8 text-center text-[color:var(--pf-muted)]">No blog posts available at the moment.</p>
     {% endif %}
   </div>
 </div>
