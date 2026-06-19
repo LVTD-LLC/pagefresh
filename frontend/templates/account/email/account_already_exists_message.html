@@ -3,32 +3,20 @@
 {% mjml %}
 <mjml>
   <mj-head>
-    <mj-style>
-      .btn-login {
-        display: inline-block;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        color: white;
-        background-color: #0f5f4a;
-        text-decoration: none;
-        line-height: 24px;
-        text-align: center;
-      }
-      .btn-login:hover {
-        background-color: #0b4a3c;
-      }
-    </mj-style>
+    <mj-title>PageFresh account already exists</mj-title>
+    <mj-preview>This email already has a PageFresh account. Log in to continue.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" />
+    </mj-attributes>
   </mj-head>
 
-  <mj-body background-color="#f3f4f6">
+  <mj-body background-color="#ecf3fa">
     <mj-section background-color="#ffffff" padding="40px 20px">
       <mj-column>
         <mj-text
           font-size="28px"
           font-weight="bold"
-          color="#1f2937"
+          color="#0a1520"
           align="center"
           padding="0 0 20px 0"
         >
@@ -39,19 +27,19 @@
 
     <mj-section background-color="#ffffff" padding="0 20px 20px 20px">
       <mj-column>
-        <mj-text font-size="18px" color="#1f2937" font-weight="600" padding="0 0 10px 0">
+        <mj-text font-size="18px" color="#0a1520" font-weight="600" padding="0 0 10px 0">
           Account Already Exists
         </mj-text>
-        <mj-text font-size="16px" color="#4b5563" line-height="24px" padding="0 0 20px 0">
+        <mj-text font-size="16px" color="#3f4f60" line-height="24px" padding="0 0 20px 0">
           Hello,
         </mj-text>
-        <mj-text font-size="16px" color="#4b5563" line-height="24px" padding="0 0 20px 0">
+        <mj-text font-size="16px" color="#3f4f60" line-height="24px" padding="0 0 20px 0">
           You attempted to sign up at {{ site_name }}, but an account with this email address already exists.
         </mj-text>
-        <mj-text font-size="16px" color="#4b5563" line-height="24px" padding="0 0 20px 0">
+        <mj-text font-size="16px" color="#3f4f60" line-height="24px" padding="0 0 20px 0">
           If you forgot your password, you can reset it by clicking the "Forgot Password" link on the login page.
         </mj-text>
-        <mj-text font-size="16px" color="#4b5563" line-height="24px" padding="0 0 30px 0">
+        <mj-text font-size="16px" color="#3f4f60" line-height="24px" padding="0 0 30px 0">
           Otherwise, you can log in using the button below:
         </mj-text>
       </mj-column>
@@ -60,12 +48,15 @@
     <mj-section background-color="#ffffff" padding="0 20px 30px 20px">
       <mj-column>
         <mj-button
-          background-color="#0f5f4a"
+          background-color="#005533"
           color="#ffffff"
           font-size="16px"
           font-weight="600"
           border-radius="8px"
-          padding="12px 24px"
+          line-height="24px"
+          padding="0"
+          inner-padding="12px 24px"
+          align="center"
           href="{{ site_url }}{% url 'account_login' %}"
         >
           Log In
@@ -75,32 +66,32 @@
 
     <mj-section background-color="#ffffff" padding="0 20px 30px 20px">
       <mj-column>
-        <mj-text font-size="14px" color="#6b7280" line-height="20px" padding="0 0 10px 0">
+        <mj-text font-size="14px" color="#687686" line-height="20px" padding="0 0 10px 0">
           Or copy and paste this link into your browser:
         </mj-text>
-        <mj-text font-size="13px" color="#0f5f4a" line-height="20px" padding="0 0 20px 0">
-          {{ site_url }}{% url 'account_login' %}
+        <mj-text font-size="13px" color="#005533" line-height="20px" padding="0 0 20px 0">
+          <span style="word-break: break-all; overflow-wrap: anywhere;">{{ site_url }}{% url 'account_login' %}</span>
         </mj-text>
-        <mj-text font-size="14px" color="#6b7280" line-height="20px" padding="20px 0 0 0">
+        <mj-text font-size="14px" color="#687686" line-height="20px" padding="20px 0 0 0">
           If you didn't try to create an account, you can safely ignore this email.
         </mj-text>
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#f9fafb" padding="30px 20px">
+    <mj-section background-color="#f7fafe" padding="30px 20px">
       <mj-column>
-        <mj-text font-size="14px" color="#6b7280" align="center" line-height="20px">
+        <mj-text font-size="14px" color="#687686" align="center" line-height="20px">
           Thanks,
         </mj-text>
-        <mj-text font-size="14px" color="#6b7280" align="center" line-height="20px" padding="5px 0 0 0">
+        <mj-text font-size="14px" color="#687686" align="center" line-height="20px" padding="5px 0 0 0">
           Rasul
         </mj-text>
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#f3f4f6" padding="20px">
+    <mj-section background-color="#ecf3fa" padding="20px">
       <mj-column>
-        <mj-text font-size="12px" color="#9ca3af" align="center">
+        <mj-text font-size="12px" color="#3f4f60" align="center">
           © 2026 PageFresh. All rights reserved.
         </mj-text>
       </mj-column>

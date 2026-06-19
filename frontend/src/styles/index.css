@@ -15,13 +15,19 @@
     --pf-brand-dark: oklch(0.38 0.12 166);
     --pf-brand-soft: oklch(0.92 0.05 166);
     --pf-warning: oklch(0.58 0.14 72);
+    --pf-warning-soft: oklch(0.95 0.045 72);
+    --pf-warning-line: oklch(0.82 0.09 72);
+    --pf-warning-ink: oklch(0.33 0.08 72);
     --pf-danger: oklch(0.52 0.16 26);
+    --pf-danger-soft: oklch(0.96 0.025 26);
+    --pf-danger-line: oklch(0.82 0.08 26);
+    --pf-danger-hover: oklch(0.44 0.14 26);
   }
 
   html {
     color: var(--pf-ink);
     background: var(--pf-surface);
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
   }
 
   body {
@@ -49,17 +55,23 @@
 
   .pf-wordmark {
     @apply inline-flex items-center gap-2 font-semibold;
+
     color: var(--pf-ink);
   }
 
   .pf-mark {
     @apply inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl;
+
     background: var(--pf-brand-dark);
   }
 
   .pf-button-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-white
+      transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:translate-y-px
+      disabled:cursor-not-allowed disabled:opacity-50;
+
     background: var(--pf-brand-dark);
+
     --tw-ring-color: var(--pf-brand);
   }
 
@@ -68,10 +80,14 @@
   }
 
   .pf-button-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold
+      transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:translate-y-px
+      disabled:cursor-not-allowed disabled:opacity-50;
+
     color: var(--pf-ink);
     border-color: var(--pf-line);
     background: var(--pf-panel);
+
     --tw-ring-color: var(--pf-brand);
   }
 
@@ -79,28 +95,96 @@
     background: var(--pf-panel-muted);
   }
 
+  .pf-danger-button {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-white
+      transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:translate-y-px;
+
+    background: var(--pf-danger);
+
+    --tw-ring-color: var(--pf-danger);
+  }
+
+  .pf-danger-button:hover {
+    background: var(--pf-danger-hover);
+  }
+
+  .pf-danger-action {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold
+      transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+
+    color: var(--pf-danger);
+
+    --tw-ring-color: var(--pf-danger);
+  }
+
+  .pf-danger-action:hover {
+    color: var(--pf-danger-hover);
+    background: var(--pf-danger-soft);
+  }
+
+  .pf-danger-text {
+    color: var(--pf-danger);
+  }
+
+  .pf-warning-banner {
+    @apply rounded-2xl border p-4;
+
+    color: var(--pf-warning-ink);
+    border-color: var(--pf-warning-line);
+    background: var(--pf-warning-soft);
+  }
+
+  .pf-warning-title {
+    color: var(--pf-warning-ink);
+  }
+
+  .pf-warning-text {
+    color: color-mix(in oklch, var(--pf-warning-ink) 88%, var(--pf-ink));
+  }
+
+  .pf-warning-action {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2 text-sm font-semibold
+      transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+
+    color: var(--pf-warning-ink);
+    border-color: var(--pf-warning-line);
+    background: var(--pf-panel);
+
+    --tw-ring-color: var(--pf-warning);
+  }
+
+  .pf-warning-action:hover {
+    background: color-mix(in oklch, var(--pf-warning) 12%, var(--pf-panel));
+  }
+
   .pf-link {
     @apply font-semibold underline-offset-4 transition-colors hover:underline;
+
     color: var(--pf-brand-dark);
   }
 
   .pf-panel {
     @apply rounded-2xl border;
+
     background: var(--pf-panel);
     border-color: var(--pf-line);
   }
 
   .pf-panel-muted {
     @apply rounded-2xl border;
+
     background: var(--pf-panel-muted);
     border-color: var(--pf-line);
   }
 
   .pf-input {
-    @apply block w-full rounded-xl border px-3 py-2.5 text-sm shadow-none transition focus:outline-none focus:ring-2;
+    @apply block min-h-11 w-full rounded-xl border px-3 py-2.5 text-sm shadow-none transition focus:outline-none
+      focus:ring-2;
+
     color: var(--pf-ink);
     border-color: var(--pf-line);
     background: var(--pf-panel);
+
     --tw-ring-color: color-mix(in oklch, var(--pf-brand) 35%, transparent);
   }
 
@@ -114,16 +198,19 @@
 
   .pf-label {
     @apply block text-sm font-medium;
+
     color: var(--pf-ink);
   }
 
   .pf-help {
     @apply mt-1 text-xs leading-5;
+
     color: var(--pf-muted);
   }
 
   .pf-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+
     color: var(--pf-brand-dark);
     background: var(--pf-brand-soft);
   }
@@ -134,16 +221,19 @@
 
   .pf-page-title {
     @apply text-3xl font-semibold sm:text-4xl;
+
     color: var(--pf-ink);
   }
 
   .pf-section-title {
     @apply text-2xl font-semibold sm:text-3xl;
+
     color: var(--pf-ink);
   }
 
   .pf-nav-link {
     @apply rounded-xl px-3 py-2 text-sm font-medium transition-colors;
+
     color: var(--pf-muted);
   }
 
@@ -154,11 +244,13 @@
 
   .pf-table-head {
     @apply px-4 py-3 text-left text-xs font-semibold;
+
     color: var(--pf-muted);
   }
 
   .pf-table-cell {
     @apply px-4 py-4 text-sm;
+
     color: var(--pf-ink);
   }
 
@@ -168,11 +260,13 @@
 
   .pf-table th {
     @apply px-4 py-3 text-left text-xs font-semibold;
+
     color: var(--pf-muted);
   }
 
   .pf-table td {
     @apply px-4 py-4;
+
     border-top: 1px solid var(--pf-line);
   }
 }

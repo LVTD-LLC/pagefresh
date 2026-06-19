@@ -11,13 +11,21 @@
     {% if active_site_count == 0 %}
     <div class="fixed inset-0 z-40 bg-[color:var(--pf-ink)]/50 backdrop-blur-sm" aria-hidden="true" data-sitemap-target="onboardingOverlay"></div>
 
-    <div class="fixed inset-0 z-50 overflow-y-auto" data-sitemap-target="onboardingModal">
+    <div class="fixed inset-0 z-50 overflow-y-auto" data-sitemap-target="onboardingModal" aria-hidden="false">
       <div class="flex min-h-screen items-center justify-center px-4 py-8">
-        <div class="pf-panel w-full max-w-xl overflow-hidden">
+        <div
+          class="pf-panel w-full max-w-xl overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="onboarding-title"
+          aria-describedby="onboarding-description"
+          tabindex="-1"
+          data-sitemap-target="onboardingDialog"
+        >
           <div class="border-b border-[color:var(--pf-line)] px-6 py-5">
             <p class="text-sm font-semibold text-[color:var(--pf-brand-dark)]">Start the review loop</p>
-            <h1 class="mt-2 text-2xl font-semibold text-[color:var(--pf-ink)]">Add your first sitemap</h1>
-            <p class="mt-2 text-sm leading-6 text-[color:var(--pf-muted)]">
+            <h1 id="onboarding-title" class="mt-2 text-2xl font-semibold text-[color:var(--pf-ink)]">Add your first sitemap</h1>
+            <p id="onboarding-description" class="mt-2 text-sm leading-6 text-[color:var(--pf-muted)]">
               PageFresh imports your pages and starts building a review queue in under a minute.
             </p>
           </div>
@@ -29,7 +37,7 @@
               <div>
                 {{ form.sitemap_url.errors | safe }}
                 <label for="{{ form.sitemap_url.id_for_label }}" class="pf-label">Sitemap URL</label>
-                {{ form.sitemap_url }}
+                <div data-sitemap-target="onboardingInitialFocus">{{ form.sitemap_url }}</div>
                 <p class="pf-help">Use the full URL, for example https://example.com/sitemap.xml.</p>
               </div>
               <div>
@@ -92,7 +100,7 @@
         <p class="mt-3 text-3xl font-semibold text-[color:var(--pf-ink)]">{{ active_site_count }} / {{ site_limit }}</p>
         <p class="mt-1 text-sm text-[color:var(--pf-muted)]">active site{{ site_limit|pluralize }} used</p>
         {% if site_limit_reached %}
-          <p class="mt-4 text-sm font-medium text-red-700">Plan limit reached.</p>
+          <p class="pf-danger-text mt-4 text-sm font-medium">Plan limit reached.</p>
           <a href="{% url 'pricing' %}" class="pf-link mt-2 inline-block text-sm">View pricing plans</a>
         {% endif %}
       </div>
@@ -169,7 +177,7 @@
                   data-action="click->sitemap#delete"
                   data-sitemap-id="{{ sitemap.id }}"
                   data-sitemap-url="{{ sitemap.sitemap_url }}"
-                  class="rounded-xl px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  class="pf-danger-action"
                   title="Archive sitemap"
                 >
                   Archive

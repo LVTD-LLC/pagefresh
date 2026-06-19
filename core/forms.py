@@ -118,7 +118,8 @@ class SitemapSettingsForm(forms.ModelForm):
             "is_active": forms.CheckboxInput(
                 attrs={
                     "class": (
-                        "h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600"
+                        "h-5 w-5 rounded border-[color:var(--pf-line)] "
+                        "text-[color:var(--pf-brand-dark)] focus:ring-[color:var(--pf-brand)]"
                     )
                 }
             ),

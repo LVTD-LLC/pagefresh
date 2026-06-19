@@ -4,6 +4,8 @@
     data-action="click->feedback#toggleFeedback"
     class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--pf-brand-dark)] text-sm font-bold text-white shadow-md transition hover:bg-[color:var(--pf-ink)] focus:outline-none focus:ring-2 focus:ring-[color:var(--pf-brand)] focus:ring-offset-2"
     aria-label="Provide feedback"
+    aria-controls="feedback-dialog"
+    aria-expanded="false"
   >
     PF
   </button>
@@ -11,14 +13,21 @@
   <div
     data-feedback-target="overlay"
     data-action="click->feedback#closeIfClickedOutside"
+    aria-hidden="true"
     class="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-[color:var(--pf-ink)]/50 opacity-0 transition-opacity duration-200"
   >
     <div
+      id="feedback-dialog"
       data-feedback-target="formContainer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="feedback-title"
+      aria-describedby="feedback-description"
+      tabindex="-1"
       class="pf-panel mx-4 w-full max-w-md scale-95 p-6 transition-transform duration-200"
     >
-      <h3 class="text-xl font-semibold text-[color:var(--pf-ink)]">Share feedback</h3>
-      <p class="mt-2 text-sm leading-6 text-[color:var(--pf-muted)]">Tell us what would make PageFresh easier to use.</p>
+      <h3 id="feedback-title" class="text-xl font-semibold text-[color:var(--pf-ink)]">Share feedback</h3>
+      <p id="feedback-description" class="mt-2 text-sm leading-6 text-[color:var(--pf-muted)]">Tell us what would make PageFresh easier to use.</p>
 
       <form data-action="submit->feedback#submitFeedback" class="mt-5">
         {% csrf_token %}

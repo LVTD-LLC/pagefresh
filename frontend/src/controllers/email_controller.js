@@ -40,8 +40,7 @@ export default class extends Controller {
       } else {
         showMessage(data.message || "Failed to add email", "error");
       }
-    } catch (error) {
-      console.error("Error adding email:", error);
+    } catch {
       showMessage("An error occurred. Please try again.", "error");
     } finally {
       this.addButtonTarget.disabled = false;
@@ -71,8 +70,7 @@ export default class extends Controller {
         showMessage(data.message || "Failed to update email", "error");
         event.currentTarget.checked = !enabled;
       }
-    } catch (error) {
-      console.error("Error toggling email:", error);
+    } catch {
       showMessage("An error occurred. Please try again.", "error");
       event.currentTarget.checked = !enabled;
     }
@@ -102,8 +100,7 @@ export default class extends Controller {
       } else {
         showMessage(data.message || "Failed to delete email", "error");
       }
-    } catch (error) {
-      console.error("Error deleting email:", error);
+    } catch {
       showMessage("An error occurred. Please try again.", "error");
     }
   }
@@ -115,14 +112,22 @@ export default class extends Controller {
       "flex flex-col gap-3 rounded-2xl border border-[color:var(--pf-line)] bg-white p-4 sm:flex-row sm:items-center sm:justify-between";
 
     const emailContent = document.createElement("label");
-    emailContent.className = "flex flex-1 items-start gap-3";
+    emailContent.className = "flex min-h-11 flex-1 items-start gap-3";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = enabled;
     checkbox.dataset.emailId = String(emailId);
     checkbox.dataset.action = "change->email#toggleEmail";
-    checkbox.className = "mt-1 h-4 w-4 rounded border-gray-300 text-emerald-700 focus:ring-emerald-600";
+    checkbox.className = [
+      "mt-1",
+      "h-5",
+      "w-5",
+      "rounded",
+      "border-[color:var(--pf-line)]",
+      "text-[color:var(--pf-brand-dark)]",
+      "focus:ring-[color:var(--pf-brand)]",
+    ].join(" ");
 
     const textContent = document.createElement("span");
     textContent.className = "min-w-0";
@@ -142,7 +147,11 @@ export default class extends Controller {
     removeButton.type = "button";
     removeButton.dataset.emailId = String(emailId);
     removeButton.dataset.action = "click->email#deleteEmail";
-    removeButton.className = "self-start text-sm font-semibold text-red-700 hover:text-red-900 sm:self-center";
+    removeButton.className = [
+      "pf-danger-action",
+      "self-start",
+      "sm:self-center",
+    ].join(" ");
     removeButton.textContent = "Remove";
 
     emailItem.append(emailContent, removeButton);

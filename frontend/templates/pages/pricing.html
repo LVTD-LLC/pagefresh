@@ -90,11 +90,11 @@
         {% else %}
           <form method="post" action="{% url 'user_upgrade_checkout_session' pk=user.id plan='agency' %}" class="mt-8">
             {% csrf_token %}
-            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</button>
+            <button type="submit" class="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</button>
           </form>
         {% endif %}
       {% else %}
-        <a href="{% url 'account_signup' %}" class="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</a>
+        <a href="{% url 'account_signup' %}" class="mt-8 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[color:var(--pf-ink)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[color:var(--pf-ink)] active:translate-y-px">Choose Agency</a>
       {% endif %}
     </div>
   </div>

@@ -16,7 +16,20 @@ colors:
   surface: "oklch(1 0 0)"
   surface-muted: "oklch(0.96 0.012 250)"
   warning: "oklch(0.58 0.14 72)"
+  warning-soft: "oklch(0.95 0.045 72)"
+  warning-line: "oklch(0.82 0.09 72)"
+  warning-ink: "oklch(0.33 0.08 72)"
   danger: "oklch(0.52 0.16 26)"
+  danger-soft: "oklch(0.96 0.025 26)"
+  danger-line: "oklch(0.82 0.08 26)"
+  danger-hover: "oklch(0.44 0.14 26)"
+  email-ink: "#0a1520"
+  email-muted: "#3f4f60"
+  email-subtle: "#687686"
+  email-line: "#cfd9e3"
+  email-surface: "#f7fafe"
+  email-surface-muted: "#ecf3fa"
+  email-primary: "#005533"
 typography:
   page-title:
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
@@ -143,9 +156,13 @@ The implementation source of truth is `frontend/src/styles/index.css`, where the
 - `surface-muted` / `--pf-panel-muted`: tinted panels, hover rows, and quiet empty states.
 - `border` / `--pf-line`: dividers, panel outlines, and input borders.
 - `warning` / `--pf-warning`: billing limits and caution indicators.
+- `warning-soft`, `warning-line`, `warning-ink`: warning banners and caution actions.
 - `danger` / `--pf-danger`: destructive/archive actions and real error states.
+- `danger-soft`, `danger-line`, `danger-hover`: destructive action hover, border, and filled-button states.
 
 Do not introduce a second dominant accent color. If a new state is needed, derive it from the existing semantic colors and verify contrast.
+
+Email templates use the documented `email-*` hex fallbacks because many email clients do not reliably support CSS custom properties or OKLCH. Keep those fallbacks visually aligned with the `--pf-*` tokens when the product palette changes. Use `email-muted` for small footer copy on `email-surface-muted`; reserve `email-subtle` for larger secondary copy on light email surfaces. Long literal strings such as copy-paste URLs, sitemap URLs, client labels, page titles, and paths need inline wrapping styles so narrow email clients do not overflow.
 
 ## Typography
 
@@ -184,6 +201,7 @@ Use existing `pf-*` classes before adding new component styles.
 
 - Primary buttons: one clear next action per surface, green/ink hover, visible focus ring.
 - Secondary buttons: bordered white controls for cancel, filter, navigation, and low-risk actions.
+- Warning and danger controls: use `pf-warning-*` and `pf-danger-*` classes rather than raw Tailwind amber/red utilities.
 - Inputs: `pf-input` with visible labels and helper text where the expected value is not obvious.
 - Badges: client labels, plan/status metadata, and compact classifications.
 - Panels: individual tools, lists, forms, and modals only. Page sections should not become nested card stacks.
