@@ -5,6 +5,9 @@ const TICK_MS = 100;
 
 export default class extends Controller {
   static targets = ["timerCircle"];
+  static values = {
+    delay: { type: Number, default: 100 },
+  };
 
   connect() {
     this.dismissed = false;
@@ -56,7 +59,7 @@ export default class extends Controller {
   reveal() {
     window.setTimeout(() => {
       this.element.classList.remove("opacity-0", "translate-x-full");
-    }, this.prefersReducedMotion ? 0 : 100);
+    }, this.prefersReducedMotion ? 0 : this.delayValue);
   }
 
   startTimer() {

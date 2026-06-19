@@ -1,9 +1,10 @@
 {% if messages %}
-<div class="fixed right-4 top-4 z-50 space-y-3" aria-live="polite" aria-atomic="false">
+<div class="fixed right-4 top-4 z-50 space-y-3 messages-container">
   {% for message in messages %}
   <div
     data-controller="message"
     data-message-id="{{ forloop.counter }}"
+    data-message-delay-value="{{ forloop.counter0 }}00"
     role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}"
     aria-live="{% if message.tags == 'error' %}assertive{% else %}polite{% endif %}"
     class="pf-panel max-w-sm p-4 opacity-0 transition-all duration-300 ease-out translate-x-full {% if message.tags == 'error' %}border-[oklch(0.86_0.08_25)]{% else %}border-[oklch(0.84_0.09_145)]{% endif %}"

@@ -1,14 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { showMessage } from "../utils/messages";
-
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-].join(",");
+import { FOCUSABLE_SELECTOR } from "../utils/focusable";
 
 export default class extends Controller {
   static targets = [
@@ -194,28 +186,44 @@ export default class extends Controller {
 
   focusInitialOnboardingField() {
     if (!this.hasOnboardingInitialFocusTarget) {
-      this.onboardingDialogTarget.focus();
+      this.focusOnboardingDialog();
       return;
     }
 
     const field = this.onboardingInitialFocusTarget.querySelector(FOCUSABLE_SELECTOR);
     if (field) {
       field.focus();
-    } else if (this.hasOnboardingDialogTarget) {
-      this.onboardingDialogTarget.focus();
+    } else {
+      this.focusOnboardingDialog();
     }
   }
 
   lockOnboardingBackground() {
-    this.inertedElements = Array.from(this.element.children).filter((element) => {
-      return (
-        element !== this.onboardingModalTarget &&
-        (!this.hasOnboardingOverlayTarget || element !== this.onboardingOverlayTarget)
-      );
-    });
-    this.inertedElements.forEach((element) => {
-      element.inert = true;
-    });
+    this.releaseOnboardingBackground();
+
+    if (!this.hasOnboardingModalTarget) {
+      return;
+    }
+
+    const overlayElement = this.hasOnboardingOverlayTarget ? this.onboardingOverlayTarget : null;
+    let activeBranch = this.onboardingModalTarget;
+
+    while (activeBranch?.parentElement) {
+      const parent = activeBranch.parentElement;
+      Array.from(parent.children).forEach((element) => {
+        if (element === activeBranch || element === overlayElement) {
+          return;
+        }
+
+        this.inertElement(element);
+      });
+
+      if (parent === document.body) {
+        break;
+      }
+
+      activeBranch = parent;
+    }
   }
 
   releaseOnboardingBackground() {
@@ -223,6 +231,21 @@ export default class extends Controller {
       element.inert = false;
     });
     this.inertedElements = [];
+  }
+
+  inertElement(element) {
+    if (!(element instanceof HTMLElement) || element.inert) {
+      return;
+    }
+
+    element.inert = true;
+    this.inertedElements.push(element);
+  }
+
+  focusOnboardingDialog() {
+    if (this.hasOnboardingDialogTarget) {
+      this.onboardingDialogTarget.focus();
+    }
   }
 
   getCsrfToken() {

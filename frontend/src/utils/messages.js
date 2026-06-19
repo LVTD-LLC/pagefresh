@@ -9,8 +9,6 @@ export function showMessage(message, type = "error") {
 function createMessagesContainer() {
   const container = document.createElement("div");
   container.className = "fixed right-4 top-4 z-50 space-y-3 messages-container";
-  container.setAttribute("aria-live", "polite");
-  container.setAttribute("aria-atomic", "false");
   document.body.appendChild(container);
 
   return container;

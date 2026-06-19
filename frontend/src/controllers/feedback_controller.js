@@ -1,14 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { showMessage } from "../utils/messages";
-
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "textarea:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-].join(",");
+import { FOCUSABLE_SELECTOR } from "../utils/focusable";
 
 export default class extends Controller {
   static targets = ["toggleButton", "overlay", "formContainer", "feedbackInput"];
@@ -174,7 +166,7 @@ export default class extends Controller {
 
   lockBackground() {
     this.inertedElements = Array.from(document.body.children).filter((element) => {
-      return element !== this.element && !element.hasAttribute("aria-live");
+      return element !== this.element && !element.classList.contains("messages-container");
     });
     this.inertedElements.forEach((element) => {
       element.inert = true;
