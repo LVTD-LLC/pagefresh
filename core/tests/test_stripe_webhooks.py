@@ -1,4 +1,6 @@
 import pytest
+from django.core.cache import cache
+from django.urls import reverse
 
 from core.choices import ProfileStates
 from core.models import Profile
@@ -143,3 +145,57 @@ def test_handle_deleted_subscription_churns_and_clears_subscription_fields(
     assert profile.state == ProfileStates.CHURNED
     assert profile.stripe_subscription_id == ""
     assert profile.stripe_plan_key == ""
+
+
+@pytest.mark.django_db
+def test_stripe_webhook_rejects_missing_signature(client, settings):
+    settings.STRIPE_WEBHOOK_SECRET = "whsec_test"
+
+    response = client.post(
+        reverse("stripe_webhook"),
+        data=b"{}",
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_stripe_webhook_is_idempotent_for_duplicate_event_ids(client, settings, monkeypatch):
+    settings.STRIPE_WEBHOOK_SECRET = "whsec_test"
+    cache.clear()
+    handled_events = []
+
+    def fake_construct_event(payload, sig_header, secret):
+        assert secret == "whsec_test"
+        return {
+            "id": "evt_duplicate",
+            "type": "customer.subscription.created",
+            "data": {"object": {}},
+        }
+
+    def fake_handler(event):
+        handled_events.append(event["id"])
+
+    monkeypatch.setattr("core.views.stripe.Webhook.construct_event", fake_construct_event)
+    monkeypatch.setattr(
+        "core.views.EVENT_HANDLERS",
+        {"customer.subscription.created": fake_handler},
+    )
+
+    first_response = client.post(
+        reverse("stripe_webhook"),
+        data=b"{}",
+        content_type="application/json",
+        HTTP_STRIPE_SIGNATURE="sig_test",
+    )
+    second_response = client.post(
+        reverse("stripe_webhook"),
+        data=b"{}",
+        content_type="application/json",
+        HTTP_STRIPE_SIGNATURE="sig_test",
+    )
+
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
+    assert handled_events == ["evt_duplicate"]

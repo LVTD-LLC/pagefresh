@@ -6,7 +6,7 @@ from django.test import RequestFactory
 from django.urls import reverse
 
 from core.choices import ProfileStates
-from core.models import Sitemap
+from core.models import Page, Sitemap
 from core.views import HomeView
 
 
@@ -131,6 +131,32 @@ class TestHomeView:
         assert response.status_code == 302
         assert response.url == reverse("home")
         assert Sitemap.objects.filter(profile=profile, is_active=True).count() == 5
+
+    def test_home_empty_state_points_to_sitemap_import(self, auth_client):
+        response = auth_client.get(reverse("home"))
+
+        assert response.status_code == 200
+        assert b"Add your first sitemap" in response.content
+        assert b"No active sites yet" in response.content
+        assert b"Add sitemap" in response.content
+
+    def test_home_filters_sites_by_client_label(self, auth_client, profile):
+        Sitemap.objects.create(
+            profile=profile,
+            sitemap_url="https://acme.example.com/sitemap.xml",
+            client_label="Acme",
+        )
+        Sitemap.objects.create(
+            profile=profile,
+            sitemap_url="https://other.example.com/sitemap.xml",
+            client_label="Other",
+        )
+
+        response = auth_client.get(reverse("home"), {"client": "Acme"})
+
+        assert response.status_code == 200
+        assert b"https://acme.example.com/sitemap.xml" in response.content
+        assert b"https://other.example.com/sitemap.xml" not in response.content
 
 
 @pytest.mark.django_db
@@ -290,3 +316,77 @@ class TestUserSettingsView:
         user.refresh_from_db()
         assert user.first_name == "Ada"
         assert user.last_name == "Lovelace"
+
+    def test_invalid_sitemap_settings_render_bound_errors(self, auth_client, user, profile):
+        EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=True)
+        sitemap = Sitemap.objects.create(
+            profile=profile,
+            sitemap_url="https://settings.example.com/sitemap.xml",
+            pages_per_review=3,
+        )
+
+        response = auth_client.post(
+            reverse("settings"),
+            {
+                "first_name": "Ada",
+                "last_name": "Lovelace",
+                "preferred_email_time": "09:30",
+                "timezone": "UTC",
+                f"sitemap_{sitemap.id}-client_label": "Client",
+                f"sitemap_{sitemap.id}-pages_per_review": "51",
+                f"sitemap_{sitemap.id}-review_cadence": "daily",
+                f"sitemap_{sitemap.id}-is_active": "on",
+            },
+        )
+
+        sitemap.refresh_from_db()
+
+        assert response.status_code == 200
+        assert b"Enter a number from 1 to 50." in response.content
+        assert sitemap.pages_per_review == 3
+
+
+@pytest.mark.django_db
+class TestReviewPageRedirect:
+    def test_review_redirect_marks_owned_page_reviewed(self, auth_client, profile):
+        sitemap = Sitemap.objects.create(
+            profile=profile,
+            sitemap_url="https://review.example.com/sitemap.xml",
+        )
+        page = Page.objects.create(
+            profile=profile,
+            sitemap=sitemap,
+            url="https://review.example.com/page",
+        )
+
+        response = auth_client.get(reverse("review_page_redirect", kwargs={"page_id": page.id}))
+
+        page.refresh_from_db()
+        assert response.status_code == 302
+        assert response.url == page.url
+        assert page.reviewed is True
+        assert page.reviewed_at is not None
+
+    def test_review_redirect_does_not_mark_other_profile_page(self, auth_client, django_user_model):
+        other_user = django_user_model.objects.create_user(
+            username="other",
+            email="other@example.com",
+            password="password123",
+        )
+        sitemap = Sitemap.objects.create(
+            profile=other_user.profile,
+            sitemap_url="https://other-review.example.com/sitemap.xml",
+        )
+        page = Page.objects.create(
+            profile=other_user.profile,
+            sitemap=sitemap,
+            url="https://other-review.example.com/page",
+        )
+
+        response = auth_client.get(reverse("review_page_redirect", kwargs={"page_id": page.id}))
+
+        page.refresh_from_db()
+        assert response.status_code == 302
+        assert response.url == reverse("home")
+        assert page.reviewed is False
+        assert page.reviewed_at is None
