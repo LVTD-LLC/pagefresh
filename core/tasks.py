@@ -1,5 +1,4 @@
 import json
-import xml.etree.ElementTree as ET
 import zoneinfo
 from datetime import time
 from urllib.parse import unquote, urlparse
@@ -146,12 +145,9 @@ def track_state_change(
     return f"Tracked state change from {from_state} to {to_state} for profile {profile_id}"
 
 
-def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # noqa: C901
-    """
-    TODO: Refactor this function to reduce complexity.
-    Consider extracting helper functions for validation, sitemap fetching, and page creation.
-    """
+def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:
     from core.models import Page, Sitemap
+    from core.utils import extract_urls_from_sitemap
 
     try:
         sitemap = Sitemap.objects.get(id=sitemap_id)
@@ -160,108 +156,27 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # n
 
     pages_created = 0
     pages_skipped = 0
-    sitemaps_processed = 0
-    visited_urls = set()
-
-    def fetch_and_parse_sitemap(sitemap_url: str, depth: int = 0) -> tuple[int, int, int]:  # noqa: C901
-        nonlocal pages_created, pages_skipped, sitemaps_processed, visited_urls
-
-        if depth > 10:
-            logger.warning(
-                "Max recursion depth reached",
-                sitemap_id=sitemap_id,
-                sitemap_url=sitemap_url,
-                depth=depth,
-            )
-            return pages_created, pages_skipped, sitemaps_processed
-
-        if sitemaps_processed >= max_sitemaps:
-            logger.warning(
-                "Max sitemaps limit reached",
-                sitemap_id=sitemap_id,
-                max_sitemaps=max_sitemaps,
-            )
-            return pages_created, pages_skipped, sitemaps_processed
-
-        if sitemap_url in visited_urls:
-            logger.warning(
-                "Circular reference detected",
-                sitemap_id=sitemap_id,
-                sitemap_url=sitemap_url,
-            )
-            return pages_created, pages_skipped, sitemaps_processed
-
-        visited_urls.add(sitemap_url)
-
-        try:
-            response = requests.get(sitemap_url, timeout=30)
-            response.raise_for_status()
-        except requests.RequestException as e:
-            logger.error(
-                "Failed to fetch sitemap",
-                sitemap_id=sitemap_id,
-                sitemap_url=sitemap_url,
-                error=str(e),
-                exc_info=True,
-            )
-            raise
-
-        try:
-            root = ET.fromstring(response.content)
-            namespace = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-
-            nested_sitemaps = root.findall(".//ns:sitemap/ns:loc", namespace)
-            if not nested_sitemaps:
-                nested_sitemaps = root.findall(".//sitemap/loc")
-
-            if nested_sitemaps:
-                logger.info(
-                    "Found nested sitemaps",
-                    sitemap_id=sitemap_id,
-                    parent_sitemap_url=sitemap_url,
-                    nested_count=len(nested_sitemaps),
-                    depth=depth,
-                )
-                for nested_sitemap_element in nested_sitemaps:
-                    nested_url = nested_sitemap_element.text
-                    if nested_url:
-                        sitemaps_processed += 1
-                        fetch_and_parse_sitemap(nested_url, depth + 1)
-                return pages_created, pages_skipped, sitemaps_processed
-
-            urls = root.findall(".//ns:url/ns:loc", namespace)
-            if not urls:
-                urls = root.findall(".//url/loc")
-
-            for url_element in urls:
-                url = url_element.text
-                if not url:
-                    continue
-
-                existing_page = Page.objects.filter(sitemap=sitemap, url=url).first()
-
-                if existing_page:
-                    pages_skipped += 1
-                    continue
-
-                Page.objects.create(profile=sitemap.profile, sitemap=sitemap, url=url)
-                pages_created += 1
-
-            return pages_created, pages_skipped, sitemaps_processed
-
-        except ET.ParseError as e:
-            logger.error(
-                "Failed to parse sitemap XML",
-                sitemap_id=sitemap_id,
-                sitemap_url=sitemap_url,
-                error=str(e),
-                exc_info=True,
-            )
-            raise
 
     try:
-        sitemaps_processed = 1
-        fetch_and_parse_sitemap(sitemap.sitemap_url)
+        response = requests.get(sitemap.sitemap_url, timeout=30)
+        response.raise_for_status()
+
+        parse_stats = {"sitemaps_processed": 1, "fetch_errors": 0}
+        found_urls = extract_urls_from_sitemap(
+            response.content,
+            sitemap_id=sitemap_id,
+            max_sitemaps=max_sitemaps,
+            visited_urls={sitemap.sitemap_url},
+            stats=parse_stats,
+        )
+
+        existing_page_urls = set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True))
+        new_urls = found_urls - existing_page_urls
+        pages_skipped = len(found_urls & existing_page_urls)
+
+        for url in sorted(new_urls):
+            Page.objects.create(profile=sitemap.profile, sitemap=sitemap, url=url)
+            pages_created += 1
 
         logger.info(
             "Sitemap processing complete",
@@ -269,10 +184,18 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # n
             sitemap_url=sitemap.sitemap_url,
             pages_created=pages_created,
             pages_skipped=pages_skipped,
-            sitemaps_processed=sitemaps_processed,
+            sitemaps_processed=parse_stats["sitemaps_processed"],
+            nested_fetch_errors=parse_stats["fetch_errors"],
         )
 
-        return f"Processed sitemap {sitemap_id}: created {pages_created} pages, skipped {pages_skipped} existing pages, processed {sitemaps_processed} sitemap(s)"  # noqa: E501
+        message = (
+            f"Processed sitemap {sitemap_id}: created {pages_created} pages, "
+            f"skipped {pages_skipped} existing pages, "
+            f"processed {parse_stats['sitemaps_processed']} sitemap(s)"
+        )
+        if parse_stats["fetch_errors"]:
+            message += f", {parse_stats['fetch_errors']} nested sitemap fetch error(s)"
+        return message
 
     except Exception as e:
         logger.error(
@@ -606,6 +529,50 @@ def schedule_review_emails() -> str:
     return f"Checked {profiles_checked} profiles, scheduled {emails_scheduled} emails"
 
 
+def _deactivate_removed_pages_after_reparse(sitemap, removed_urls, parse_stats) -> int:
+    if not removed_urls:
+        return 0
+
+    if parse_stats["fetch_errors"]:
+        skipped_removed_count = len(removed_urls)
+        logger.warning(
+            "Skipped marking pages inactive after incomplete sitemap fetch",
+            sitemap_id=sitemap.id,
+            sitemap_url=sitemap.sitemap_url,
+            removed_count=skipped_removed_count,
+            nested_fetch_errors=parse_stats["fetch_errors"],
+        )
+        return skipped_removed_count
+
+    sitemap.pages.filter(url__in=removed_urls).update(is_active=False)
+    logger.info(
+        "Pages no longer in sitemap marked as inactive",
+        sitemap_id=sitemap.id,
+        sitemap_url=sitemap.sitemap_url,
+        removed_count=len(removed_urls),
+    )
+    return 0
+
+
+def _reactivate_found_pages_after_reparse(sitemap, existing_page_urls, found_urls) -> None:
+    still_active_urls = existing_page_urls & found_urls
+    if not still_active_urls:
+        return
+
+    pages_to_reactivate = sitemap.pages.filter(url__in=still_active_urls, is_active=False)
+    reactivated_count = pages_to_reactivate.count()
+    if reactivated_count <= 0:
+        return
+
+    pages_to_reactivate.update(is_active=True)
+    logger.info(
+        "Pages reactivated (were previously marked inactive)",
+        sitemap_id=sitemap.id,
+        sitemap_url=sitemap.sitemap_url,
+        reactivated_count=reactivated_count,
+    )
+
+
 def reparse_sitemap(sitemap_id: int) -> str:
     from core.models import Page, Sitemap
     from core.utils import extract_urls_from_sitemap
@@ -640,7 +607,13 @@ def reparse_sitemap(sitemap_id: int) -> str:
     existing_page_urls = set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True))
 
     try:
-        found_urls = extract_urls_from_sitemap(response.content, sitemap_id=sitemap_id)
+        parse_stats = {"sitemaps_processed": 1, "fetch_errors": 0}
+        found_urls = extract_urls_from_sitemap(
+            response.content,
+            sitemap_id=sitemap_id,
+            visited_urls={sitemap_url},
+            stats=parse_stats,
+        )
 
         new_urls = found_urls - existing_page_urls
         new_pages_found = 0
@@ -655,30 +628,10 @@ def reparse_sitemap(sitemap_id: int) -> str:
                 )
 
         removed_urls = existing_page_urls - found_urls
-        if removed_urls:
-            pages_to_mark = Page.objects.filter(sitemap=sitemap, url__in=removed_urls)
-            pages_to_mark.update(is_active=False)
-            logger.info(
-                "Pages no longer in sitemap marked as inactive",
-                sitemap_id=sitemap_id,
-                sitemap_url=sitemap_url,
-                removed_count=len(removed_urls),
-            )
-
-        still_active_urls = existing_page_urls & found_urls
-        if still_active_urls:
-            pages_to_reactivate = Page.objects.filter(
-                sitemap=sitemap, url__in=still_active_urls, is_active=False
-            )
-            reactivated_count = pages_to_reactivate.count()
-            if reactivated_count > 0:
-                pages_to_reactivate.update(is_active=True)
-                logger.info(
-                    "Pages reactivated (were previously marked inactive)",
-                    sitemap_id=sitemap_id,
-                    sitemap_url=sitemap_url,
-                    reactivated_count=reactivated_count,
-                )
+        skipped_removed_count = _deactivate_removed_pages_after_reparse(
+            sitemap, removed_urls, parse_stats
+        )
+        _reactivate_found_pages_after_reparse(sitemap, existing_page_urls, found_urls)
 
         logger.info(
             "Sitemap reparsed successfully",
@@ -686,13 +639,20 @@ def reparse_sitemap(sitemap_id: int) -> str:
             sitemap_url=sitemap_url,
             new_pages=new_pages_found,
             removed_pages=len(removed_urls),
+            skipped_removed_pages=skipped_removed_count,
+            sitemaps_processed=parse_stats["sitemaps_processed"],
+            nested_fetch_errors=parse_stats["fetch_errors"],
         )
 
-        return (
+        marked_removed_count = len(removed_urls) - skipped_removed_count
+        message = (
             f"Reparsed sitemap {sitemap_id}: "
             f"found {new_pages_found} new pages, "
-            f"marked {len(removed_urls)} pages as inactive"
+            f"marked {marked_removed_count} pages as inactive"
         )
+        if skipped_removed_count:
+            message += f", skipped {skipped_removed_count} inactive update(s) after sitemap errors"
+        return message
 
     except Exception as e:
         logger.error(

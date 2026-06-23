@@ -20,9 +20,15 @@ def test_review_queue_is_deterministic(profile):
 
     now = timezone.now()
 
-    first = Page.objects.create(profile=profile, sitemap=sitemap, url="https://agency.example.com/a")
-    second = Page.objects.create(profile=profile, sitemap=sitemap, url="https://agency.example.com/b")
-    third = Page.objects.create(profile=profile, sitemap=sitemap, url="https://agency.example.com/c")
+    first = Page.objects.create(
+        profile=profile, sitemap=sitemap, url="https://agency.example.com/a"
+    )
+    second = Page.objects.create(
+        profile=profile, sitemap=sitemap, url="https://agency.example.com/b"
+    )
+    third = Page.objects.create(
+        profile=profile, sitemap=sitemap, url="https://agency.example.com/c"
+    )
 
     Page.objects.filter(id=first.id).update(created_at=now - timedelta(days=3))
     Page.objects.filter(id=second.id).update(created_at=now - timedelta(days=2))
@@ -103,11 +109,70 @@ def test_review_queue_skips_inactive_and_no_review_pages(profile):
         url="https://skip.example.com/inactive",
         is_active=False,
     )
-    keep = Page.objects.create(profile=profile, sitemap=sitemap, url="https://skip.example.com/keep")
+    keep = Page.objects.create(
+        profile=profile, sitemap=sitemap, url="https://skip.example.com/keep"
+    )
 
     selected = reserve_pages_for_review(sitemap, now=timezone.now())
 
     assert [page.id for page in selected] == [keep.id]
+
+
+@pytest.mark.django_db
+def test_review_queue_skips_reviewed_pages(profile):
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://reviewed.example.com/sitemap.xml",
+        review_cadence=ReviewCadence.DAILY,
+        pages_per_review=5,
+    )
+
+    Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://reviewed.example.com/done",
+        reviewed=True,
+        reviewed_at=timezone.now(),
+    )
+    keep = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://reviewed.example.com/open",
+    )
+
+    selected = reserve_pages_for_review(sitemap, now=timezone.now())
+
+    assert [page.id for page in selected] == [keep.id]
+
+
+@pytest.mark.django_db
+def test_review_queue_exhausts_after_unsent_pages_are_reserved(profile):
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://exhausted.example.com/sitemap.xml",
+        review_cadence=ReviewCadence.DAILY,
+        pages_per_review=1,
+    )
+    first = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://exhausted.example.com/a",
+    )
+    second = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://exhausted.example.com/b",
+    )
+
+    now = timezone.now()
+
+    first_run = reserve_pages_for_review(sitemap, now=now)
+    second_run = reserve_pages_for_review(sitemap, now=now + timedelta(minutes=5))
+    third_run = reserve_pages_for_review(sitemap, now=now + timedelta(minutes=10))
+
+    assert [page.id for page in first_run] == [first.id]
+    assert [page.id for page in second_run] == [second.id]
+    assert third_run == []
 
 
 @pytest.mark.django_db
@@ -136,3 +201,62 @@ def test_send_page_email_uses_queue_window(monkeypatch, profile):
     assert "No unreviewed pages found" in second_run_message
     assert page.review_queue_attempts == 1
     assert page.last_review_email_sent_at is not None
+
+
+@pytest.mark.django_db
+def test_send_page_email_builds_grouped_context_and_review_links(monkeypatch, profile, settings):
+    settings.SITE_URL = "https://app.pagefresh.test"
+    first_sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://acme.example.com/sitemap.xml",
+        client_label="Acme",
+        review_cadence=ReviewCadence.DAILY,
+        pages_per_review=1,
+    )
+    second_sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://beta.example.com/sitemap.xml",
+        client_label="Beta",
+        review_cadence=ReviewCadence.DAILY,
+        pages_per_review=1,
+    )
+    first_page = Page.objects.create(
+        profile=profile,
+        sitemap=first_sitemap,
+        url="https://acme.example.com/a",
+    )
+    second_page = Page.objects.create(
+        profile=profile,
+        sitemap=second_sitemap,
+        url="https://beta.example.com/b",
+    )
+    captured_context = {}
+
+    def fake_render_to_string(template_name, context=None):
+        captured_context.update(context)
+        return "<p>review page content</p>"
+
+    monkeypatch.setattr("core.tasks.fetch_page_metadata", lambda _url: {})
+    monkeypatch.setattr("django.template.loader.render_to_string", fake_render_to_string)
+    monkeypatch.setattr("django.core.mail.EmailMultiAlternatives.send", lambda self: None)
+
+    message = send_page_email_to_profile(profile.id)
+
+    assert "Successfully sent page review email" in message
+    assert captured_context["total_clients"] == 2
+    assert [group["client_label"] for group in captured_context["client_groups"]] == [
+        "Acme",
+        "Beta",
+    ]
+
+    acme_group = captured_context["client_groups"][0]
+    beta_group = captured_context["client_groups"][1]
+
+    assert acme_group["sites"][0]["pages"][0].id == first_page.id
+    assert beta_group["sites"][0]["pages"][0].id == second_page.id
+    assert acme_group["sites"][0]["pages"][0].review_url == (
+        f"https://app.pagefresh.test/review-page/{first_page.id}/"
+    )
+    assert beta_group["sites"][0]["pages"][0].review_url == (
+        f"https://app.pagefresh.test/review-page/{second_page.id}/"
+    )

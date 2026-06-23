@@ -158,6 +158,7 @@
               {% with form=sitemap_forms|lookup:sitemap.id %}
               <div class="grid gap-4 md:grid-cols-2">
                 <div>
+                  {{ form.client_label.errors | safe }}
                   <label for="id_sitemap_{{ sitemap.id }}-client_label" class="pf-label">Client label</label>
                   {{ form.client_label }}
                   <p class="pf-help">Group sites by client or workspace name.</p>
@@ -173,12 +174,14 @@
                 </div>
 
                 <div>
+                  {{ form.pages_per_review.errors | safe }}
                   <label for="id_sitemap_{{ sitemap.id }}-pages_per_review" class="pf-label">Pages per review email</label>
                   {{ form.pages_per_review }}
                   <p class="pf-help">Number of pages to include in each digest, from 1 to 50.</p>
                 </div>
 
                 <div>
+                  {{ form.review_cadence.errors | safe }}
                   <label for="id_sitemap_{{ sitemap.id }}-review_cadence" class="pf-label">Review cadence</label>
                   {{ form.review_cadence }}
                   <p class="pf-help">How often to send review emails for this sitemap.</p>
