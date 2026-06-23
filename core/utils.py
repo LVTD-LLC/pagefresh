@@ -4,6 +4,7 @@ from datetime import timedelta
 import requests
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
+from django.utils.html import conditional_escape
 
 from cleanapp.utils import get_cleanapp_logger
 
@@ -27,7 +28,7 @@ class DivErrorList(ErrorList):
                   </svg>
                 </div>
                 <div class="ml-3 text-sm text-red-700">
-                      {"".join([f"<p>{e}</p>" for e in self])}
+                      {"".join(f"<p>{conditional_escape(e)}</p>" for e in self)}
                 </div>
               </div>
             </div>
