@@ -194,7 +194,7 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:
             f"processed {parse_stats['sitemaps_processed']} sitemap(s)"
         )
         if parse_stats["fetch_errors"]:
-            message += f", {parse_stats['fetch_errors']} nested sitemap fetch error(s)"
+            message += f", {parse_stats['fetch_errors']} nested sitemap fetch/parse error(s)"
         return message
 
     except Exception as e:

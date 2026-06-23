@@ -134,6 +134,37 @@ def test_process_sitemap_pages_respects_max_sitemap_limit(monkeypatch, profile):
 
 
 @pytest.mark.django_db
+def test_process_sitemap_pages_keeps_valid_siblings_after_nested_parse_error(monkeypatch, profile):
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://partial-import.example.com/sitemap.xml",
+    )
+
+    responses = {
+        "https://partial-import.example.com/sitemap.xml": FakeResponse(
+            sitemap_index(
+                "https://partial-import.example.com/valid.xml",
+                "https://partial-import.example.com/invalid.xml",
+            )
+        ),
+        "https://partial-import.example.com/valid.xml": FakeResponse(
+            urlset("https://partial-import.example.com/a")
+        ),
+        "https://partial-import.example.com/invalid.xml": FakeResponse(b"<not-xml"),
+    }
+
+    monkeypatch.setattr("requests.get", lambda url, timeout: responses[url])
+
+    message = process_sitemap_pages(sitemap.id)
+
+    assert "created 1 pages" in message
+    assert "1 nested sitemap fetch/parse error(s)" in message
+    assert set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True)) == {
+        "https://partial-import.example.com/a",
+    }
+
+
+@pytest.mark.django_db
 def test_reparse_sitemap_does_not_mark_pages_inactive_after_nested_fetch_error(
     monkeypatch, profile
 ):
@@ -154,6 +185,36 @@ def test_reparse_sitemap_does_not_mark_pages_inactive_after_nested_fetch_error(
         "https://partial.example.com/nested.xml": FakeResponse(
             exc=requests.Timeout("nested sitemap timed out")
         ),
+    }
+
+    monkeypatch.setattr("requests.get", lambda url, timeout: responses[url])
+
+    message = reparse_sitemap(sitemap.id)
+
+    page.refresh_from_db()
+    assert "skipped 1 inactive update(s) after sitemap errors" in message
+    assert page.is_active is True
+
+
+@pytest.mark.django_db
+def test_reparse_sitemap_does_not_mark_pages_inactive_after_nested_parse_error(
+    monkeypatch, profile
+):
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://partial-parse.example.com/sitemap.xml",
+    )
+    page = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://partial-parse.example.com/still-valid",
+    )
+
+    responses = {
+        "https://partial-parse.example.com/sitemap.xml": FakeResponse(
+            sitemap_index("https://partial-parse.example.com/nested.xml")
+        ),
+        "https://partial-parse.example.com/nested.xml": FakeResponse(b"<not-xml"),
     }
 
     monkeypatch.setattr("requests.get", lambda url, timeout: responses[url])

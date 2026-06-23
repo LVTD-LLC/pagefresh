@@ -144,10 +144,10 @@ def extract_urls_from_sitemap(  # noqa: C901
                         stats=stats,
                     )
                     found_urls.update(nested_urls)
-                except requests.RequestException as e:
+                except (requests.RequestException, ValidationError) as e:
                     stats["fetch_errors"] += 1
                     logger.warning(
-                        "Failed to fetch nested sitemap",
+                        "Failed to fetch or parse nested sitemap",
                         sitemap_id=sitemap_id,
                         nested_url=nested_url,
                         error=str(e),
