@@ -1,6 +1,10 @@
+from datetime import timedelta
+
 import pytest
 import requests
+from django.utils import timezone
 
+from core.choices import SitemapImportStatus
 from core.models import Page, Sitemap
 from core.tasks import process_sitemap_pages, reparse_sitemap
 
@@ -59,8 +63,10 @@ def test_process_sitemap_pages_imports_nested_sitemaps_without_duplicates(monkey
 
     message = process_sitemap_pages(sitemap.id)
 
+    sitemap.refresh_from_db()
     assert "created 3 pages" in message
     assert "skipped 0 existing pages" in message
+    assert sitemap.import_status == SitemapImportStatus.SUCCEEDED
     assert set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True)) == {
         "https://example.com/a",
         "https://example.com/b",
@@ -82,7 +88,9 @@ def test_process_sitemap_pages_reports_fetch_failure_without_creating_pages(monk
 
     message = process_sitemap_pages(sitemap.id)
 
+    sitemap.refresh_from_db()
     assert message.startswith("Failed to process sitemap:")
+    assert sitemap.import_status == SitemapImportStatus.FAILED
     assert Page.objects.filter(sitemap=sitemap).count() == 0
 
 
@@ -194,6 +202,30 @@ def test_reparse_sitemap_does_not_mark_pages_inactive_after_nested_fetch_error(
     page.refresh_from_db()
     assert "skipped 1 inactive update(s) after sitemap errors" in message
     assert page.is_active is True
+
+
+@pytest.mark.django_db
+def test_reparse_sitemap_marks_removed_pages_inactive_with_timestamp(monkeypatch, profile):
+    stale_updated_at = timezone.now() - timedelta(days=1)
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://removed.example.com/sitemap.xml",
+    )
+    page = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://removed.example.com/old",
+    )
+    Page.objects.filter(id=page.id).update(updated_at=stale_updated_at)
+
+    monkeypatch.setattr("requests.get", lambda url, timeout: FakeResponse(urlset()))
+
+    message = reparse_sitemap(sitemap.id)
+
+    page.refresh_from_db()
+    assert "marked 1 pages as inactive" in message
+    assert page.is_active is False
+    assert page.updated_at > stale_updated_at
 
 
 @pytest.mark.django_db

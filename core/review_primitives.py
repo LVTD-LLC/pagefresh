@@ -6,16 +6,16 @@ from typing import Literal
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Case, Count, DateTimeField, F, Q, Value, When
 from django.urls import reverse
 from django.utils import timezone
 from django_q.tasks import async_task
 
 from cleanapp.utils import get_cleanapp_logger
-from core.billing import get_active_site_count, get_site_limit_for_profile
+from core.billing import cadence_to_timedelta, get_active_site_count, get_site_limit_for_profile
 from core.choices import ReviewCadence, ReviewOutcome, SitemapImportStatus
 from core.models import Page, Profile, Sitemap
-from core.review_queue import get_due_pages_queryset, is_page_due_for_review
+from core.review_queue import is_page_due_for_review
 
 logger = get_cleanapp_logger(__name__)
 
@@ -169,8 +169,10 @@ def archive_sitemap_for_profile(profile: Profile, sitemap_id: int) -> tuple[Site
 
         sitemap.is_active = False
         sitemap.save(update_fields=["is_active", "updated_at"])
+        archived_at = timezone.now()
         archived_pages = Page.objects.filter(sitemap=sitemap, is_active=True).update(
-            is_active=False
+            is_active=False,
+            updated_at=archived_at,
         )
 
     logger.info(
@@ -183,31 +185,42 @@ def archive_sitemap_for_profile(profile: Profile, sitemap_id: int) -> tuple[Site
 
 
 def queue_sitemap_refresh_for_profile(profile: Profile, sitemap_id: int) -> Sitemap:
-    sitemap = get_sitemap_for_profile(profile, sitemap_id)
-    if not sitemap.is_active:
-        raise PrimitiveError("Archived sitemaps cannot be refreshed")
-    if sitemap.import_status in {SitemapImportStatus.QUEUED, SitemapImportStatus.RUNNING}:
-        logger.info(
-            "Sitemap refresh already pending",
-            profile_id=profile.id,
-            sitemap_id=sitemap.id,
-            import_status=sitemap.import_status,
+    should_enqueue = False
+    with transaction.atomic():
+        try:
+            sitemap = Sitemap.objects.select_for_update().get(id=sitemap_id, profile=profile)
+        except Sitemap.DoesNotExist as exc:
+            raise NotFoundError("Sitemap not found") from exc
+
+        if not sitemap.is_active:
+            raise PrimitiveError("Archived sitemaps cannot be refreshed")
+        if sitemap.import_status in {SitemapImportStatus.QUEUED, SitemapImportStatus.RUNNING}:
+            logger.info(
+                "Sitemap refresh already pending",
+                profile_id=profile.id,
+                sitemap_id=sitemap.id,
+                import_status=sitemap.import_status,
+            )
+            return sitemap
+
+        sitemap.import_status = SitemapImportStatus.QUEUED
+        sitemap.last_import_message = "Refresh queued"
+        sitemap.last_import_started_at = None
+        sitemap.last_import_finished_at = None
+        sitemap.save(
+            update_fields=[
+                "import_status",
+                "last_import_message",
+                "last_import_started_at",
+                "last_import_finished_at",
+                "updated_at",
+            ]
         )
+        should_enqueue = True
+
+    if not should_enqueue:
         return sitemap
 
-    sitemap.import_status = SitemapImportStatus.QUEUED
-    sitemap.last_import_message = "Refresh queued"
-    sitemap.last_import_started_at = None
-    sitemap.last_import_finished_at = None
-    sitemap.save(
-        update_fields=[
-            "import_status",
-            "last_import_message",
-            "last_import_started_at",
-            "last_import_finished_at",
-            "updated_at",
-        ]
-    )
     async_task("core.tasks.reparse_sitemap", sitemap_id=sitemap.id, group="Sitemap Reparse")
     logger.info(
         "Sitemap refresh queued through shared primitive",
@@ -290,21 +303,49 @@ def get_due_pages_for_profile(
 ) -> tuple[list[Page], int]:
     pagination = pagination or normalize_pagination()
     now = now or timezone.now()
-    sitemaps = get_sitemaps_queryset(profile, client_label=client_label)
+
+    due_before_by_cadence = Case(
+        *[
+            When(
+                sitemap__review_cadence=cadence,
+                then=Value(now - cadence_to_timedelta(cadence)),
+            )
+            for cadence in ReviewCadence.values
+        ],
+        default=Value(now - cadence_to_timedelta(ReviewCadence.DAILY)),
+        output_field=DateTimeField(),
+    )
+    queryset = (
+        Page.objects.filter(
+            profile=profile,
+            reviewed=False,
+            needs_review=True,
+            is_active=True,
+            sitemap__is_active=True,
+        )
+        .select_related("sitemap")
+        .annotate(due_before=due_before_by_cadence)
+        .filter(
+            Q(last_review_email_sent_at__isnull=True)
+            | Q(last_review_email_sent_at__lte=F("due_before"))
+        )
+        .order_by(
+            "sitemap__client_label",
+            "sitemap__sitemap_url",
+            "last_review_email_sent_at",
+            "reviewed_at",
+            "created_at",
+            "id",
+        )
+    )
     if sitemap_id is not None:
-        sitemaps = sitemaps.filter(id=sitemap_id)
+        queryset = queryset.filter(sitemap_id=sitemap_id)
+    if client_label:
+        queryset = queryset.filter(sitemap__client_label__iexact=client_label.strip())
 
-    due_ids: list[int] = []
-    for sitemap in sitemaps:
-        due_ids.extend(get_due_pages_queryset(sitemap, now=now).values_list("id", flat=True))
-
-    total = len(due_ids)
-    selected_ids = due_ids[pagination.offset : pagination.offset + pagination.limit]
-    if not selected_ids:
-        return [], total
-
-    pages_by_id = Page.objects.filter(id__in=selected_ids).select_related("sitemap").in_bulk()
-    return [pages_by_id[page_id] for page_id in selected_ids if page_id in pages_by_id], total
+    total = queryset.count()
+    pages = list(queryset[pagination.offset : pagination.offset + pagination.limit])
+    return pages, total
 
 
 def select_page_for_profile(

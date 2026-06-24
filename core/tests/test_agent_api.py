@@ -104,6 +104,28 @@ def test_agent_api_archives_sitemap_and_pages(auth_client, profile, django_user_
 
 
 @pytest.mark.django_db
+def test_agent_api_archive_updates_page_timestamps(auth_client, profile):
+    stale_updated_at = timezone.now() - timedelta(days=1)
+    sitemap = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://archive-time.example.com/sitemap.xml",
+    )
+    page = Page.objects.create(
+        profile=profile,
+        sitemap=sitemap,
+        url="https://archive-time.example.com/a",
+    )
+    Page.objects.filter(id=page.id).update(updated_at=stale_updated_at)
+
+    response = auth_client.delete(f"/api/agent/sitemaps/{sitemap.id}")
+
+    assert response.status_code == 200
+    page.refresh_from_db()
+    assert page.is_active is False
+    assert page.updated_at > stale_updated_at
+
+
+@pytest.mark.django_db
 def test_agent_api_queues_sitemap_refresh_without_fetching(auth_client, profile, monkeypatch):
     sitemap = Sitemap.objects.create(
         profile=profile,
@@ -207,6 +229,47 @@ def test_agent_api_lists_clients_pages_due_pages_and_selection(auth_client, prof
     assert selected["id"] == due_page.id
     assert selected["is_due"] is True
     assert selected["review_url"].endswith(f"/review-page/{due_page.id}/")
+
+
+@pytest.mark.django_db
+def test_agent_api_due_pages_respect_each_sitemap_cadence(auth_client, profile):
+    now = timezone.now()
+    daily = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://cadence.example.com/daily.xml",
+        review_cadence=ReviewCadence.DAILY,
+    )
+    weekly = Sitemap.objects.create(
+        profile=profile,
+        sitemap_url="https://cadence.example.com/weekly.xml",
+        review_cadence=ReviewCadence.WEEKLY,
+    )
+    daily_due = Page.objects.create(
+        profile=profile,
+        sitemap=daily,
+        url="https://cadence.example.com/daily-due",
+        last_review_email_sent_at=now - timedelta(days=2),
+    )
+    weekly_not_due = Page.objects.create(
+        profile=profile,
+        sitemap=weekly,
+        url="https://cadence.example.com/weekly-not-due",
+        last_review_email_sent_at=now - timedelta(days=2),
+    )
+    weekly_due = Page.objects.create(
+        profile=profile,
+        sitemap=weekly,
+        url="https://cadence.example.com/weekly-due",
+        last_review_email_sent_at=now - timedelta(days=8),
+    )
+
+    response = auth_client.get("/api/agent/due-pages")
+
+    assert response.status_code == 200
+    ids = {item["id"] for item in response.json()["items"]}
+    assert daily_due.id in ids
+    assert weekly_due.id in ids
+    assert weekly_not_due.id not in ids
 
 
 @pytest.mark.django_db

@@ -53,10 +53,14 @@ def email_confirmation_callback(sender, request, user, **kwargs):
 @receiver(post_save, sender=Sitemap)
 def process_sitemap_on_creation(sender, instance, created, **kwargs):
     if created:
-        Sitemap.objects.filter(id=instance.id).update(
-            import_status=SitemapImportStatus.QUEUED,
-            last_import_message="Queued for initial import",
-        )
+        if instance.import_status == SitemapImportStatus.PENDING:
+            Sitemap.objects.filter(
+                id=instance.id,
+                import_status=SitemapImportStatus.PENDING,
+            ).update(
+                import_status=SitemapImportStatus.QUEUED,
+                last_import_message="Queued for initial import",
+            )
         async_task(
             "core.tasks.process_sitemap_pages",
             sitemap_id=instance.id,

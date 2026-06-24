@@ -393,10 +393,6 @@ def agent_update_page_review(request: HttpRequest, page_id: int, data: AgentPage
 def delete_sitemap(request: HttpRequest, sitemap_id: int):
     profile = request.auth
     try:
-        existing_sitemap = get_sitemap_for_profile(profile, sitemap_id)
-        if not existing_sitemap.is_active:
-            return {"success": False, "message": "Sitemap is already archived"}
-
         sitemap, _archived_pages = archive_sitemap_for_profile(profile, sitemap_id)
 
         logger.info(
