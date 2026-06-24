@@ -147,6 +147,11 @@ def track_state_change(
 
 def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:
     from core.models import Page, Sitemap
+    from core.review_primitives import (
+        mark_sitemap_import_failed,
+        mark_sitemap_import_running,
+        mark_sitemap_import_succeeded,
+    )
     from core.utils import extract_urls_from_sitemap
 
     try:
@@ -158,6 +163,8 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:
     pages_skipped = 0
 
     try:
+        mark_sitemap_import_running(sitemap, "Initial import running")
+
         response = requests.get(sitemap.sitemap_url, timeout=30)
         response.raise_for_status()
 
@@ -195,9 +202,11 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:
         )
         if parse_stats["fetch_errors"]:
             message += f", {parse_stats['fetch_errors']} nested sitemap fetch/parse error(s)"
+        mark_sitemap_import_succeeded(sitemap, message)
         return message
 
     except Exception as e:
+        mark_sitemap_import_failed(sitemap, f"Failed to process sitemap: {str(e)}")
         logger.error(
             "Sitemap processing failed",
             sitemap_id=sitemap_id,
@@ -544,7 +553,7 @@ def _deactivate_removed_pages_after_reparse(sitemap, removed_urls, parse_stats) 
         )
         return skipped_removed_count
 
-    sitemap.pages.filter(url__in=removed_urls).update(is_active=False)
+    sitemap.pages.filter(url__in=removed_urls).update(is_active=False, updated_at=timezone.now())
     logger.info(
         "Pages no longer in sitemap marked as inactive",
         sitemap_id=sitemap.id,
@@ -564,7 +573,7 @@ def _reactivate_found_pages_after_reparse(sitemap, existing_page_urls, found_url
     if reactivated_count <= 0:
         return
 
-    pages_to_reactivate.update(is_active=True)
+    pages_to_reactivate.update(is_active=True, updated_at=timezone.now())
     logger.info(
         "Pages reactivated (were previously marked inactive)",
         sitemap_id=sitemap.id,
@@ -575,6 +584,11 @@ def _reactivate_found_pages_after_reparse(sitemap, existing_page_urls, found_url
 
 def reparse_sitemap(sitemap_id: int) -> str:
     from core.models import Page, Sitemap
+    from core.review_primitives import (
+        mark_sitemap_import_failed,
+        mark_sitemap_import_running,
+        mark_sitemap_import_succeeded,
+    )
     from core.utils import extract_urls_from_sitemap
 
     try:
@@ -583,7 +597,6 @@ def reparse_sitemap(sitemap_id: int) -> str:
         return f"Sitemap with id {sitemap_id} not found."
 
     sitemap_url = sitemap.sitemap_url
-
     logger.info(
         "Starting sitemap reparse",
         sitemap_id=sitemap_id,
@@ -591,6 +604,8 @@ def reparse_sitemap(sitemap_id: int) -> str:
     )
 
     try:
+        mark_sitemap_import_running(sitemap, "Refresh running")
+
         response = requests.get(sitemap_url, timeout=30)
         response.raise_for_status()
     except requests.RequestException as e:
@@ -601,8 +616,10 @@ def reparse_sitemap(sitemap_id: int) -> str:
             error=str(e),
         )
         sitemap.is_active = False
-        sitemap.save(update_fields=["is_active"])
-        return f"Sitemap {sitemap_id} marked as inactive (not accessible)"
+        sitemap.save(update_fields=["is_active", "updated_at"])
+        message = f"Sitemap {sitemap_id} marked as inactive (not accessible)"
+        mark_sitemap_import_failed(sitemap, message)
+        return message
 
     existing_page_urls = set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True))
 
@@ -652,9 +669,11 @@ def reparse_sitemap(sitemap_id: int) -> str:
         )
         if skipped_removed_count:
             message += f", skipped {skipped_removed_count} inactive update(s) after sitemap errors"
+        mark_sitemap_import_succeeded(sitemap, message)
         return message
 
     except Exception as e:
+        mark_sitemap_import_failed(sitemap, f"Failed to reparse sitemap {sitemap_id}: {str(e)}")
         logger.error(
             "Failed to reparse sitemap",
             sitemap_id=sitemap_id,

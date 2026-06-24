@@ -19,9 +19,11 @@ class SitemapAdmin(admin.ModelAdmin):
         "pages_per_review",
         "review_cadence",
         "is_active",
+        "import_status",
+        "last_import_finished_at",
         "created_at",
     )
-    list_filter = ("client_label", "review_cadence", "is_active", "created_at")
+    list_filter = ("client_label", "review_cadence", "is_active", "import_status", "created_at")
     search_fields = ("sitemap_url", "client_label", "profile__user__email")
     list_editable = ("is_active",)
 
@@ -35,13 +37,15 @@ class PageAdmin(admin.ModelAdmin):
         "is_active",
         "needs_review",
         "reviewed",
+        "review_outcome",
         "reviewed_at",
+        "review_outcome_at",
         "last_review_email_sent_at",
         "review_queue_attempts",
         "created_at",
     )
-    list_filter = ("is_active", "needs_review", "reviewed", "created_at")
-    search_fields = ("url", "profile__user__email")
+    list_filter = ("is_active", "needs_review", "reviewed", "review_outcome", "created_at")
+    search_fields = ("url", "review_note", "profile__user__email")
     list_editable = ("is_active", "needs_review")
 
 

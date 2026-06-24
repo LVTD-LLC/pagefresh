@@ -21,3 +21,19 @@ class ReviewCadence(models.TextChoices):
     DAILY = "daily", "Daily"
     WEEKLY = "weekly", "Weekly"
     MONTHLY = "monthly", "Monthly"
+
+
+class SitemapImportStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    QUEUED = "queued", "Queued"
+    RUNNING = "running", "Running"
+    SUCCEEDED = "succeeded", "Succeeded"
+    FAILED = "failed", "Failed"
+
+
+class ReviewOutcome(models.TextChoices):
+    PENDING = "pending", "Pending"
+    REVIEWED = "reviewed", "Reviewed"
+    SKIPPED = "skipped", "Skipped"
+    STALE = "stale", "Stale"
+    NEEDS_FOLLOW_UP = "needs_follow_up", "Needs follow-up"

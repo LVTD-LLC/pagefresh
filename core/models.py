@@ -6,7 +6,13 @@ from django_q.tasks import async_task
 
 from cleanapp.utils import get_cleanapp_logger
 from core.base_models import BaseModel
-from core.choices import BlogPostStatus, ProfileStates, ReviewCadence
+from core.choices import (
+    BlogPostStatus,
+    ProfileStates,
+    ReviewCadence,
+    ReviewOutcome,
+    SitemapImportStatus,
+)
 from core.model_utils import generate_random_key
 
 logger = get_cleanapp_logger(__name__)
@@ -186,6 +192,19 @@ class Sitemap(BaseModel):
         default=True,
         help_text="Whether this sitemap is still accessible and should be processed",
     )
+    import_status = models.CharField(
+        max_length=20,
+        choices=SitemapImportStatus.choices,
+        default=SitemapImportStatus.PENDING,
+        help_text="Latest sitemap import or refresh status",
+    )
+    last_import_message = models.TextField(
+        blank=True,
+        default="",
+        help_text="Safe summary of the latest sitemap import or refresh outcome",
+    )
+    last_import_started_at = models.DateTimeField(null=True, blank=True)
+    last_import_finished_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.sitemap_url} - <{self.profile}>"
@@ -230,6 +249,18 @@ class Page(BaseModel):
         default=True,
         help_text="Whether this page is still present in the sitemap",
     )
+    review_outcome = models.CharField(
+        max_length=32,
+        choices=ReviewOutcome.choices,
+        default=ReviewOutcome.PENDING,
+        help_text="Structured review outcome for API and agent workflows",
+    )
+    review_note = models.TextField(
+        blank=True,
+        default="",
+        help_text="Profile-scoped structured note from the latest review action",
+    )
+    review_outcome_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.url} - <{self.profile}>"
