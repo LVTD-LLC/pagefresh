@@ -5,7 +5,7 @@ from allauth.account.models import EmailAddress
 from django.test import RequestFactory
 from django.urls import reverse
 
-from core.choices import ProfileStates
+from core.choices import ProfileStates, ReviewOutcome
 from core.models import Page, Sitemap
 from core.views import HomeView
 
@@ -357,6 +357,8 @@ class TestReviewPageRedirect:
             profile=profile,
             sitemap=sitemap,
             url="https://review.example.com/page",
+            review_outcome=ReviewOutcome.NEEDS_FOLLOW_UP,
+            review_note="Fix product screenshots",
         )
 
         response = auth_client.get(reverse("review_page_redirect", kwargs={"page_id": page.id}))
@@ -366,6 +368,10 @@ class TestReviewPageRedirect:
         assert response.url == page.url
         assert page.reviewed is True
         assert page.reviewed_at is not None
+        assert page.needs_review is False
+        assert page.review_outcome == ReviewOutcome.REVIEWED
+        assert page.review_outcome_at == page.reviewed_at
+        assert page.review_note == ""
 
     def test_review_redirect_does_not_mark_other_profile_page(self, auth_client, django_user_model):
         other_user = django_user_model.objects.create_user(

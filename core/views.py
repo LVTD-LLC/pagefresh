@@ -553,6 +553,7 @@ def review_page_redirect(request, page_id):
         page.needs_review = False
         page.review_outcome = ReviewOutcome.REVIEWED
         page.review_outcome_at = page.reviewed_at
+        page.review_note = ""
         page.save(
             update_fields=[
                 "reviewed",
@@ -560,6 +561,7 @@ def review_page_redirect(request, page_id):
                 "needs_review",
                 "review_outcome",
                 "review_outcome_at",
+                "review_note",
                 "updated_at",
             ]
         )
