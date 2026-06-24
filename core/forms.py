@@ -1,3 +1,4 @@
+import zoneinfo
 from datetime import datetime
 from functools import lru_cache
 
@@ -54,9 +55,17 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.user:
+        if self.instance and self.instance.pk and self.instance.user_id:
             self.fields["first_name"].initial = self.instance.user.first_name
             self.fields["last_name"].initial = self.instance.user.last_name
+
+    def clean_timezone(self):
+        timezone_name = (self.cleaned_data.get("timezone") or "").strip()
+        try:
+            zoneinfo.ZoneInfo(timezone_name)
+        except (ValueError, zoneinfo.ZoneInfoNotFoundError) as exc:
+            raise forms.ValidationError("Choose a valid timezone.") from exc
+        return timezone_name
 
     def save(self, commit=True):
         profile = super().save(commit=False)
@@ -133,3 +142,11 @@ class SitemapSettingsForm(forms.ModelForm):
 
     def clean_client_label(self):
         return (self.cleaned_data.get("client_label") or "").strip()
+
+    def clean_pages_per_review(self):
+        pages_per_review = self.cleaned_data.get("pages_per_review")
+        if pages_per_review is None:
+            return pages_per_review
+        if pages_per_review < 1 or pages_per_review > 50:
+            raise forms.ValidationError("Enter a number from 1 to 50.")
+        return pages_per_review

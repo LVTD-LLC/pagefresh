@@ -309,11 +309,13 @@ class UserSettingsView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         context["has_subscription"] = user.profile.has_active_subscription
 
         sitemaps = Sitemap.objects.filter(profile=user.profile).order_by("-created_at")
-        sitemap_forms = {}
-        for sitemap in sitemaps:
-            sitemap_forms[sitemap.id] = SitemapSettingsForm(
-                instance=sitemap, prefix=f"sitemap_{sitemap.id}"
-            )
+        sitemap_forms = context.get("sitemap_forms")
+        if sitemap_forms is None:
+            sitemap_forms = {}
+            for sitemap in sitemaps:
+                sitemap_forms[sitemap.id] = SitemapSettingsForm(
+                    instance=sitemap, prefix=f"sitemap_{sitemap.id}"
+                )
 
         context["sitemaps"] = sitemaps
         context["sitemap_forms"] = sitemap_forms
@@ -369,7 +371,9 @@ class UserSettingsView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             messages.success(request, "Settings updated successfully")
             return redirect(self.get_success_url())
         else:
-            return self.form_invalid(profile_form)
+            sitemap_forms_by_id = {sitemap.id: form for sitemap, form in sitemap_forms}
+            context = self.get_context_data(form=profile_form, sitemap_forms=sitemap_forms_by_id)
+            return self.render_to_response(context)
 
 
 @login_required
@@ -558,6 +562,13 @@ def review_page_redirect(request, page_id):
                 "review_outcome_at",
                 "updated_at",
             ]
+        )
+
+        logger.info(
+            "Page marked reviewed from redirect",
+            profile_id=request.user.profile.id,
+            page_id=page.id,
+            sitemap_id=page.sitemap_id,
         )
 
         return redirect(page.url)
