@@ -173,6 +173,10 @@ def agent_list_sitemaps(
     }
 
 
+def agent_sitemap_payload(profile, sitemap_id: int) -> dict:
+    return sitemap_to_dict(get_sitemap_for_profile(profile, sitemap_id))
+
+
 @api.get(
     "/agent/sitemaps/{sitemap_id}",
     response={200: AgentSitemapOut, 404: ErrorOut},
@@ -180,7 +184,7 @@ def agent_list_sitemaps(
 )
 def agent_get_sitemap(request: HttpRequest, sitemap_id: int):
     try:
-        return sitemap_to_dict(get_sitemap_for_profile(request.auth, sitemap_id))
+        return agent_sitemap_payload(request.auth, sitemap_id)
     except PrimitiveError as exc:
         return error_response(exc)
 
@@ -209,7 +213,7 @@ def agent_archive_sitemap(request: HttpRequest, sitemap_id: int):
 )
 def agent_sitemap_status(request: HttpRequest, sitemap_id: int):
     try:
-        return sitemap_to_dict(get_sitemap_for_profile(request.auth, sitemap_id))
+        return agent_sitemap_payload(request.auth, sitemap_id)
     except PrimitiveError as exc:
         return error_response(exc)
 
