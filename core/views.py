@@ -29,7 +29,7 @@ from core.billing import (
     get_trial_days_for_plan,
     normalize_plan_key,
 )
-from core.choices import ProfileStates
+from core.choices import ProfileStates, ReviewOutcome
 from core.forms import ProfileUpdateForm, SitemapForm, SitemapSettingsForm
 from core.models import BlogPost, Feedback, Page, Profile, Sitemap
 from core.stripe_webhooks import EVENT_HANDLERS
@@ -546,7 +546,19 @@ def review_page_redirect(request, page_id):
 
         page.reviewed = True
         page.reviewed_at = timezone.now()
-        page.save(update_fields=["reviewed", "reviewed_at"])
+        page.needs_review = False
+        page.review_outcome = ReviewOutcome.REVIEWED
+        page.review_outcome_at = page.reviewed_at
+        page.save(
+            update_fields=[
+                "reviewed",
+                "reviewed_at",
+                "needs_review",
+                "review_outcome",
+                "review_outcome_at",
+                "updated_at",
+            ]
+        )
 
         return redirect(page.url)
     except Page.DoesNotExist:

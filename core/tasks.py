@@ -152,11 +152,18 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # n
     Consider extracting helper functions for validation, sitemap fetching, and page creation.
     """
     from core.models import Page, Sitemap
+    from core.review_primitives import (
+        mark_sitemap_import_failed,
+        mark_sitemap_import_running,
+        mark_sitemap_import_succeeded,
+    )
 
     try:
         sitemap = Sitemap.objects.get(id=sitemap_id)
     except Sitemap.DoesNotExist:
         return f"Sitemap with id {sitemap_id} not found."
+
+    mark_sitemap_import_running(sitemap, "Initial import running")
 
     pages_created = 0
     pages_skipped = 0
@@ -272,9 +279,12 @@ def process_sitemap_pages(sitemap_id: int, max_sitemaps: int = 100) -> str:  # n
             sitemaps_processed=sitemaps_processed,
         )
 
-        return f"Processed sitemap {sitemap_id}: created {pages_created} pages, skipped {pages_skipped} existing pages, processed {sitemaps_processed} sitemap(s)"  # noqa: E501
+        message = f"Processed sitemap {sitemap_id}: created {pages_created} pages, skipped {pages_skipped} existing pages, processed {sitemaps_processed} sitemap(s)"  # noqa: E501
+        mark_sitemap_import_succeeded(sitemap, message)
+        return message
 
     except Exception as e:
+        mark_sitemap_import_failed(sitemap, f"Failed to process sitemap: {str(e)}")
         logger.error(
             "Sitemap processing failed",
             sitemap_id=sitemap_id,
@@ -608,6 +618,11 @@ def schedule_review_emails() -> str:
 
 def reparse_sitemap(sitemap_id: int) -> str:
     from core.models import Page, Sitemap
+    from core.review_primitives import (
+        mark_sitemap_import_failed,
+        mark_sitemap_import_running,
+        mark_sitemap_import_succeeded,
+    )
     from core.utils import extract_urls_from_sitemap
 
     try:
@@ -616,6 +631,7 @@ def reparse_sitemap(sitemap_id: int) -> str:
         return f"Sitemap with id {sitemap_id} not found."
 
     sitemap_url = sitemap.sitemap_url
+    mark_sitemap_import_running(sitemap, "Refresh running")
 
     logger.info(
         "Starting sitemap reparse",
@@ -635,7 +651,9 @@ def reparse_sitemap(sitemap_id: int) -> str:
         )
         sitemap.is_active = False
         sitemap.save(update_fields=["is_active"])
-        return f"Sitemap {sitemap_id} marked as inactive (not accessible)"
+        message = f"Sitemap {sitemap_id} marked as inactive (not accessible)"
+        mark_sitemap_import_failed(sitemap, message)
+        return message
 
     existing_page_urls = set(Page.objects.filter(sitemap=sitemap).values_list("url", flat=True))
 
@@ -688,13 +706,16 @@ def reparse_sitemap(sitemap_id: int) -> str:
             removed_pages=len(removed_urls),
         )
 
-        return (
+        message = (
             f"Reparsed sitemap {sitemap_id}: "
             f"found {new_pages_found} new pages, "
             f"marked {len(removed_urls)} pages as inactive"
         )
+        mark_sitemap_import_succeeded(sitemap, message)
+        return message
 
     except Exception as e:
+        mark_sitemap_import_failed(sitemap, f"Failed to reparse sitemap {sitemap_id}: {str(e)}")
         logger.error(
             "Failed to reparse sitemap",
             sitemap_id=sitemap_id,

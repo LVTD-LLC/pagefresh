@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django_q.tasks import async_task
 
 from cleanapp.utils import get_cleanapp_logger
+from core.choices import SitemapImportStatus
 from core.models import EmailPreference, Profile, ProfileStates, Sitemap
 from core.tasks import add_email_to_buttondown
 
@@ -52,6 +53,10 @@ def email_confirmation_callback(sender, request, user, **kwargs):
 @receiver(post_save, sender=Sitemap)
 def process_sitemap_on_creation(sender, instance, created, **kwargs):
     if created:
+        Sitemap.objects.filter(id=instance.id).update(
+            import_status=SitemapImportStatus.QUEUED,
+            last_import_message="Queued for initial import",
+        )
         async_task(
             "core.tasks.process_sitemap_pages",
             sitemap_id=instance.id,

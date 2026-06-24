@@ -8,6 +8,22 @@ from core.billing import cadence_to_timedelta
 from core.models import Page
 
 
+def is_page_due_for_review(page, now=None):
+    now = now or timezone.now()
+    if page.reviewed or not page.needs_review or not page.is_active:
+        return False
+
+    sitemap = page.sitemap
+    if not sitemap or not sitemap.is_active:
+        return False
+
+    if page.last_review_email_sent_at is None:
+        return True
+
+    cadence_delta = cadence_to_timedelta(sitemap.review_cadence)
+    return page.last_review_email_sent_at <= now - cadence_delta
+
+
 def get_due_pages_queryset(sitemap, now=None):
     now = now or timezone.now()
     cadence_delta = cadence_to_timedelta(sitemap.review_cadence)
@@ -21,8 +37,7 @@ def get_due_pages_queryset(sitemap, now=None):
             is_active=True,
         )
         .filter(
-            Q(last_review_email_sent_at__isnull=True)
-            | Q(last_review_email_sent_at__lte=due_before)
+            Q(last_review_email_sent_at__isnull=True) | Q(last_review_email_sent_at__lte=due_before)
         )
         .order_by("last_review_email_sent_at", "reviewed_at", "created_at", "id")
     )

@@ -1,9 +1,8 @@
 from django.http import HttpRequest
 from ninja.security import APIKeyQuery
 
-from core.models import Profile
-
 from cleanapp.utils import get_cleanapp_logger
+from core.models import Profile
 
 logger = get_cleanapp_logger(__name__)
 
@@ -12,14 +11,16 @@ class APIKeyAuth(APIKeyQuery):
     param_name = "api_key"
 
     def authenticate(self, request: HttpRequest, key: str) -> Profile | None:
-        logger.info(
-            "[Django Ninja Auth] API Request with key",
-            key=key,
-        )
         try:
-            return Profile.objects.get(key=key)
+            profile = Profile.objects.get(key=key)
+            logger.info(
+                "[Django Ninja Auth] API key authenticated",
+                profile_id=profile.id,
+                user_id=profile.user_id,
+            )
+            return profile
         except Profile.DoesNotExist:
-            logger.warning("[Django Ninja Auth] Invalid API key", key=key)
+            logger.warning("[Django Ninja Auth] Invalid API key")
             return None
 
 
@@ -50,14 +51,20 @@ class SuperuserAPIKeyAuth(APIKeyQuery):
         try:
             profile = Profile.objects.get(key=key)
             if profile.user.is_superuser:
+                logger.info(
+                    "[Django Ninja Auth] Superuser API key authenticated",
+                    profile_id=profile.id,
+                    user_id=profile.user_id,
+                )
                 return profile
             logger.warning(
                 "[Django Ninja Auth] Non-superuser attempted admin access",
-                profile_id=profile.user.id,
+                profile_id=profile.id,
+                user_id=profile.user_id,
             )
             return None
         except Profile.DoesNotExist:
-            logger.warning("[Django Ninja Auth] Profile does not exist", key=key)
+            logger.warning("[Django Ninja Auth] Profile does not exist")
             return None
 
 
